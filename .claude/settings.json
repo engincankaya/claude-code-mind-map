@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__mindmap__scan",
+      "mcp__mindmap__resolve",
+      "mcp__mindmap__context",
+      "mcp__mindmap__parse",
+      "mcp__mindmap__sample",
+      "mcp__mindmap__build",
+      "mcp__mindmap__validate",
+      "mcp__mindmap__publish"
+    ]
+  }
+}

@@ -1,0 +1,858 @@
+{
+  "meta": {
+    "generatedAt": "2026-02-08T23:55:44.411Z",
+    "rootPath": "",
+    "view": "hierarchical",
+    "nodeCount": 27,
+    "edgeCount": 38,
+    "toolVersions": {
+      "mcpServer": "0.1.0",
+      "treeSitter": "0.24"
+    }
+  },
+  "nodes": [
+    {
+      "id": "root",
+      "label": "MCP Server — Layered Architecture (Entry → Tools → Libraries/Languages)",
+      "kind": "root",
+      "type": "architecture",
+      "metadata": {
+        "pattern": "MCP Server — Layered Architecture (Entry → Tools → Libraries/Languages)"
+      },
+      "confidence": 1
+    },
+    {
+      "id": "g-90afa6fec4001a24",
+      "label": "Server Core",
+      "kind": "group",
+      "type": "layer",
+      "parentId": "root",
+      "metadata": {
+        "description": "MCP server entry point and shared types",
+        "fileCount": 2
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-e8f7ed71d93ad489",
+      "label": "index.ts",
+      "kind": "file",
+      "type": "MCP server entry point & tool registration",
+      "parentId": "g-90afa6fec4001a24",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/index.ts",
+        "fileId": "e8f7ed71d93ad489",
+        "language": "typescript",
+        "role": "MCP server entry point & tool registration",
+        "importance": "core"
+      },
+      "confidence": 0.98
+    },
+    {
+      "id": "f-b4e6a59725650275",
+      "label": "types.ts",
+      "kind": "file",
+      "type": "Shared ToolResult type definitions",
+      "parentId": "g-90afa6fec4001a24",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/types.ts",
+        "fileId": "b4e6a59725650275",
+        "language": "typescript",
+        "role": "Shared ToolResult type definitions",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "g-a75d3372ac225d18",
+      "label": "Tool Handlers",
+      "kind": "group",
+      "type": "feature",
+      "parentId": "root",
+      "metadata": {
+        "description": "8 MCP tools forming the mind map generation pipeline",
+        "fileCount": 8
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-d69795c6d50526f3",
+      "label": "scan.ts",
+      "kind": "file",
+      "type": "scan tool handler — file discovery",
+      "parentId": "g-a75d3372ac225d18",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/scan.ts",
+        "fileId": "d69795c6d50526f3",
+        "language": "typescript",
+        "role": "scan tool handler — file discovery",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "f-319363d430e9d9bc",
+      "label": "resolve.ts",
+      "kind": "file",
+      "type": "resolve tool handler — file ID & hash",
+      "parentId": "g-a75d3372ac225d18",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/resolve.ts",
+        "fileId": "319363d430e9d9bc",
+        "language": "typescript",
+        "role": "resolve tool handler — file ID & hash",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "f-f23002dfc341cd9c",
+      "label": "context.ts",
+      "kind": "file",
+      "type": "context tool handler — project metadata",
+      "parentId": "g-a75d3372ac225d18",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/context.ts",
+        "fileId": "f23002dfc341cd9c",
+        "language": "typescript",
+        "role": "context tool handler — project metadata",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "f-049ee2f92b096d77",
+      "label": "parse.ts",
+      "kind": "file",
+      "type": "parse tool handler — Tree-sitter AST analysis",
+      "parentId": "g-a75d3372ac225d18",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/parse.ts",
+        "fileId": "049ee2f92b096d77",
+        "language": "typescript",
+        "role": "parse tool handler — Tree-sitter AST analysis",
+        "importance": "core"
+      },
+      "confidence": 0.97
+    },
+    {
+      "id": "f-b49504342ab0a9f7",
+      "label": "sample.ts",
+      "kind": "file",
+      "type": "sample tool handler — code snippet reader",
+      "parentId": "g-a75d3372ac225d18",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/sample.ts",
+        "fileId": "b49504342ab0a9f7",
+        "language": "typescript",
+        "role": "sample tool handler — code snippet reader",
+        "importance": "supporting"
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "f-d638059166d4e8e2",
+      "label": "build.ts",
+      "kind": "file",
+      "type": "build tool handler — graph construction",
+      "parentId": "g-a75d3372ac225d18",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/build.ts",
+        "fileId": "d638059166d4e8e2",
+        "language": "typescript",
+        "role": "build tool handler — graph construction",
+        "importance": "core"
+      },
+      "confidence": 0.97
+    },
+    {
+      "id": "f-37a1e3ff7092236b",
+      "label": "validate.ts",
+      "kind": "file",
+      "type": "validate tool handler — graph integrity check",
+      "parentId": "g-a75d3372ac225d18",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/validate.ts",
+        "fileId": "37a1e3ff7092236b",
+        "language": "typescript",
+        "role": "validate tool handler — graph integrity check",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "f-0f11ab0fd4984fda",
+      "label": "publish.ts",
+      "kind": "file",
+      "type": "publish tool handler — final output",
+      "parentId": "g-a75d3372ac225d18",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/publish.ts",
+        "fileId": "0f11ab0fd4984fda",
+        "language": "typescript",
+        "role": "publish tool handler — final output",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "g-77c9f5ccaf617693",
+      "label": "Language Normalizers",
+      "kind": "group",
+      "type": "domain",
+      "parentId": "root",
+      "metadata": {
+        "description": "Tree-sitter AST normalizers for supported languages",
+        "fileCount": 7
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-e5546eb9121295ca",
+      "label": "types.ts",
+      "kind": "file",
+      "type": "Language normalizer interfaces & types",
+      "parentId": "g-77c9f5ccaf617693",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/types.ts",
+        "fileId": "e5546eb9121295ca",
+        "language": "typescript",
+        "role": "Language normalizer interfaces & types",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "f-71804e438b80b7b3",
+      "label": "registry.ts",
+      "kind": "file",
+      "type": "Normalizer registry — language lookup",
+      "parentId": "g-77c9f5ccaf617693",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/registry.ts",
+        "fileId": "71804e438b80b7b3",
+        "language": "typescript",
+        "role": "Normalizer registry — language lookup",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "f-53e403f99bb9ad8b",
+      "label": "normalizer.ts",
+      "kind": "file",
+      "type": "TypeScript language normalizer",
+      "parentId": "g-77c9f5ccaf617693",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/typescript/normalizer.ts",
+        "fileId": "53e403f99bb9ad8b",
+        "language": "typescript",
+        "role": "TypeScript language normalizer",
+        "importance": "supporting"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "f-23744172e5f5fa22",
+      "label": "normalizer.ts",
+      "kind": "file",
+      "type": "Python language normalizer",
+      "parentId": "g-77c9f5ccaf617693",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/python/normalizer.ts",
+        "fileId": "23744172e5f5fa22",
+        "language": "typescript",
+        "role": "Python language normalizer",
+        "importance": "supporting"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "f-5bb2bd36f52477e1",
+      "label": "normalizer.ts",
+      "kind": "file",
+      "type": "Go language normalizer",
+      "parentId": "g-77c9f5ccaf617693",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/go/normalizer.ts",
+        "fileId": "5bb2bd36f52477e1",
+        "language": "typescript",
+        "role": "Go language normalizer",
+        "importance": "supporting"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "f-6521643ae5a54621",
+      "label": "normalizer.ts",
+      "kind": "file",
+      "type": "Rust language normalizer",
+      "parentId": "g-77c9f5ccaf617693",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/rust/normalizer.ts",
+        "fileId": "6521643ae5a54621",
+        "language": "typescript",
+        "role": "Rust language normalizer",
+        "importance": "supporting"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "f-31630c0b361a7975",
+      "label": "normalizer.ts",
+      "kind": "file",
+      "type": "Java language normalizer",
+      "parentId": "g-77c9f5ccaf617693",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/java/normalizer.ts",
+        "fileId": "31630c0b361a7975",
+        "language": "typescript",
+        "role": "Java language normalizer",
+        "importance": "supporting"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "g-ce0cff719a947476",
+      "label": "Infrastructure",
+      "kind": "group",
+      "type": "infrastructure",
+      "parentId": "root",
+      "metadata": {
+        "description": "Shared libraries: artifact store, hashing, Tree-sitter loader",
+        "fileCount": 3
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-7877a9d693b32198",
+      "label": "artifact-store.ts",
+      "kind": "file",
+      "type": "Artifact store — inter-tool data passing",
+      "parentId": "g-ce0cff719a947476",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/lib/artifact-store.ts",
+        "fileId": "7877a9d693b32198",
+        "language": "typescript",
+        "role": "Artifact store — inter-tool data passing",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "f-458b5c84e88c4ab9",
+      "label": "hashing.ts",
+      "kind": "file",
+      "type": "Hashing utilities (SHA-256, fileId, symbolId)",
+      "parentId": "g-ce0cff719a947476",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/lib/hashing.ts",
+        "fileId": "458b5c84e88c4ab9",
+        "language": "typescript",
+        "role": "Hashing utilities (SHA-256, fileId, symbolId)",
+        "importance": "supporting"
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "f-abfe138c6245bc14",
+      "label": "tree-sitter-loader.ts",
+      "kind": "file",
+      "type": "Tree-sitter WASM loader & parser factory",
+      "parentId": "g-ce0cff719a947476",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/lib/tree-sitter-loader.ts",
+        "fileId": "abfe138c6245bc14",
+        "language": "typescript",
+        "role": "Tree-sitter WASM loader & parser factory",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "g-62773d17d6c151b1",
+      "label": "Build Scripts",
+      "kind": "group",
+      "type": "infrastructure",
+      "parentId": "root",
+      "metadata": {
+        "description": "Development scripts for grammar file management",
+        "fileCount": 1
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-7c82f899da6733ab",
+      "label": "copy-grammars.js",
+      "kind": "file",
+      "type": "Build script — copy grammar WASM files",
+      "parentId": "g-62773d17d6c151b1",
+      "metadata": {
+        "canonicalPath": "mcp-server/scripts/copy-grammars.js",
+        "fileId": "7c82f899da6733ab",
+        "language": "javascript",
+        "role": "Build script — copy grammar WASM files",
+        "importance": "peripheral"
+      },
+      "confidence": 0.85
+    }
+  ],
+  "edges": [
+    {
+      "id": "e-cecb2ed4f671db16",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-d69795c6d50526f3",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleScan",
+      "metadata": {
+        "annotation": "handleScan"
+      }
+    },
+    {
+      "id": "e-c558f0a195a53c50",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-319363d430e9d9bc",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleResolve",
+      "metadata": {
+        "annotation": "handleResolve"
+      }
+    },
+    {
+      "id": "e-8423af472a4e4d97",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-f23002dfc341cd9c",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleContext",
+      "metadata": {
+        "annotation": "handleContext"
+      }
+    },
+    {
+      "id": "e-499a3a81cfb3db50",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-049ee2f92b096d77",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleParse",
+      "metadata": {
+        "annotation": "handleParse"
+      }
+    },
+    {
+      "id": "e-507328bc87e1d8bb",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-b49504342ab0a9f7",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleSample",
+      "metadata": {
+        "annotation": "handleSample"
+      }
+    },
+    {
+      "id": "e-a5e000f784470455",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-d638059166d4e8e2",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleBuild",
+      "metadata": {
+        "annotation": "handleBuild"
+      }
+    },
+    {
+      "id": "e-b6d35144cdef6b1a",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-37a1e3ff7092236b",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleValidate",
+      "metadata": {
+        "annotation": "handleValidate"
+      }
+    },
+    {
+      "id": "e-0077430d6e3aab4c",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-0f11ab0fd4984fda",
+      "rels": [
+        "imports"
+      ],
+      "label": "handlePublish",
+      "metadata": {
+        "annotation": "handlePublish"
+      }
+    },
+    {
+      "id": "e-dac7315ea8aa3e44",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "imports"
+      ],
+      "label": "ArtifactStore",
+      "metadata": {
+        "annotation": "ArtifactStore"
+      }
+    },
+    {
+      "id": "e-d10a75c191271735",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-abfe138c6245bc14",
+      "rels": [
+        "imports"
+      ],
+      "label": "createParser, getSupportedLanguages",
+      "metadata": {
+        "annotation": "createParser, getSupportedLanguages"
+      }
+    },
+    {
+      "id": "e-703f48a843f1601e",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-71804e438b80b7b3",
+      "rels": [
+        "imports"
+      ],
+      "label": "getNormalizer",
+      "metadata": {
+        "annotation": "getNormalizer"
+      }
+    },
+    {
+      "id": "e-06b736d31f544281",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "NormalizerResult, SymbolInfo",
+      "metadata": {
+        "annotation": "NormalizerResult, SymbolInfo"
+      }
+    },
+    {
+      "id": "e-f4973c60cd24f2e0",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "imports"
+      ],
+      "label": "ArtifactStore",
+      "metadata": {
+        "annotation": "ArtifactStore"
+      }
+    },
+    {
+      "id": "e-0a12d8d374bd9ea1",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-458b5c84e88c4ab9",
+      "rels": [
+        "imports"
+      ],
+      "label": "makeSymbolId",
+      "metadata": {
+        "annotation": "makeSymbolId"
+      }
+    },
+    {
+      "id": "e-9a663df341e5825a",
+      "source": "f-d638059166d4e8e2",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "imports"
+      ],
+      "label": "ArtifactStore",
+      "metadata": {
+        "annotation": "ArtifactStore"
+      }
+    },
+    {
+      "id": "e-e801ce549a5cd854",
+      "source": "f-d638059166d4e8e2",
+      "target": "f-458b5c84e88c4ab9",
+      "rels": [
+        "imports"
+      ],
+      "label": "sha256Short",
+      "metadata": {
+        "annotation": "sha256Short"
+      }
+    },
+    {
+      "id": "e-79778f666e7d5f8e",
+      "source": "f-37a1e3ff7092236b",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "imports"
+      ],
+      "label": "ArtifactStore",
+      "metadata": {
+        "annotation": "ArtifactStore"
+      }
+    },
+    {
+      "id": "e-ceaf587a4eee8862",
+      "source": "f-0f11ab0fd4984fda",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "imports"
+      ],
+      "label": "ArtifactStore",
+      "metadata": {
+        "annotation": "ArtifactStore"
+      }
+    },
+    {
+      "id": "e-0074322e080c0ae8",
+      "source": "f-319363d430e9d9bc",
+      "target": "f-458b5c84e88c4ab9",
+      "rels": [
+        "imports"
+      ],
+      "label": "makeFileId, sha256",
+      "metadata": {
+        "annotation": "makeFileId, sha256"
+      }
+    },
+    {
+      "id": "e-c01c5015b168511d",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-53e403f99bb9ad8b",
+      "rels": [
+        "imports"
+      ],
+      "label": "typescriptNormalizer",
+      "metadata": {
+        "annotation": "typescriptNormalizer"
+      }
+    },
+    {
+      "id": "e-76742843f9524e9a",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-23744172e5f5fa22",
+      "rels": [
+        "imports"
+      ],
+      "label": "pythonNormalizer",
+      "metadata": {
+        "annotation": "pythonNormalizer"
+      }
+    },
+    {
+      "id": "e-ab26259581662c5c",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-5bb2bd36f52477e1",
+      "rels": [
+        "imports"
+      ],
+      "label": "goNormalizer",
+      "metadata": {
+        "annotation": "goNormalizer"
+      }
+    },
+    {
+      "id": "e-91bd6c8330233822",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-6521643ae5a54621",
+      "rels": [
+        "imports"
+      ],
+      "label": "rustNormalizer",
+      "metadata": {
+        "annotation": "rustNormalizer"
+      }
+    },
+    {
+      "id": "e-0f7d96da2169e8d4",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-31630c0b361a7975",
+      "rels": [
+        "imports"
+      ],
+      "label": "javaNormalizer",
+      "metadata": {
+        "annotation": "javaNormalizer"
+      }
+    },
+    {
+      "id": "e-8ebf3b9ae057d02a",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "LanguageNormalizer",
+      "metadata": {
+        "annotation": "LanguageNormalizer"
+      }
+    },
+    {
+      "id": "e-eb8e4142c3886465",
+      "source": "f-53e403f99bb9ad8b",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "LanguageNormalizer, types",
+      "metadata": {
+        "annotation": "LanguageNormalizer, types"
+      }
+    },
+    {
+      "id": "e-b7e095c5f61d0cad",
+      "source": "f-23744172e5f5fa22",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "LanguageNormalizer, types",
+      "metadata": {
+        "annotation": "LanguageNormalizer, types"
+      }
+    },
+    {
+      "id": "e-8014623a24f5bc03",
+      "source": "f-5bb2bd36f52477e1",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "LanguageNormalizer, types",
+      "metadata": {
+        "annotation": "LanguageNormalizer, types"
+      }
+    },
+    {
+      "id": "e-c9ee5472c9db914b",
+      "source": "f-6521643ae5a54621",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "LanguageNormalizer, types",
+      "metadata": {
+        "annotation": "LanguageNormalizer, types"
+      }
+    },
+    {
+      "id": "e-65fdcdfef0cf2c4c",
+      "source": "f-31630c0b361a7975",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "LanguageNormalizer, types",
+      "metadata": {
+        "annotation": "LanguageNormalizer, types"
+      }
+    },
+    {
+      "id": "e-b54c3b6f0de15d2d",
+      "source": "f-d69795c6d50526f3",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult, jsonResult, errorResult",
+      "metadata": {
+        "annotation": "ToolResult, jsonResult, errorResult"
+      }
+    },
+    {
+      "id": "e-eff549d9054d24ef",
+      "source": "f-319363d430e9d9bc",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult, jsonResult, errorResult",
+      "metadata": {
+        "annotation": "ToolResult, jsonResult, errorResult"
+      }
+    },
+    {
+      "id": "e-b36771438d7f995b",
+      "source": "f-f23002dfc341cd9c",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult, jsonResult, errorResult",
+      "metadata": {
+        "annotation": "ToolResult, jsonResult, errorResult"
+      }
+    },
+    {
+      "id": "e-effad4345849e4af",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult, jsonResult, errorResult",
+      "metadata": {
+        "annotation": "ToolResult, jsonResult, errorResult"
+      }
+    },
+    {
+      "id": "e-1350ed3dc87753b7",
+      "source": "f-b49504342ab0a9f7",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult, jsonResult, errorResult",
+      "metadata": {
+        "annotation": "ToolResult, jsonResult, errorResult"
+      }
+    },
+    {
+      "id": "e-8370d32d72978b43",
+      "source": "f-d638059166d4e8e2",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult, jsonResult, errorResult",
+      "metadata": {
+        "annotation": "ToolResult, jsonResult, errorResult"
+      }
+    },
+    {
+      "id": "e-ccfba87f166add39",
+      "source": "f-37a1e3ff7092236b",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult, jsonResult, errorResult",
+      "metadata": {
+        "annotation": "ToolResult, jsonResult, errorResult"
+      }
+    },
+    {
+      "id": "e-751ea6d336073461",
+      "source": "f-0f11ab0fd4984fda",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult, errorResult",
+      "metadata": {
+        "annotation": "ToolResult, errorResult"
+      }
+    }
+  ]
+}

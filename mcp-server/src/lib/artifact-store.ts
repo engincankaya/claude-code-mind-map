@@ -1,17 +1,16 @@
 import { v4 as uuidv4 } from "uuid";
 
 export type ArtifactType =
-  | "parse-result"
-  | "architecture-plan"
-  | "mindmap"
-  | "validation-report";
+  | "parseResult"
+  | "mindmapJSON"
+  | "validationReport";
 
 export interface ArtifactEntry {
   id: string;
   type: ArtifactType;
   data: unknown;
   createdAt: string;
-  summary: Record<string, unknown>;
+  summary: string;
 }
 
 /**
@@ -27,7 +26,7 @@ export class ArtifactStore {
   put(
     type: ArtifactType,
     data: unknown,
-    summary: Record<string, unknown>,
+    summary: string,
   ): string {
     const id = uuidv4();
     const entry: ArtifactEntry = {
@@ -46,7 +45,7 @@ export class ArtifactStore {
     return this.store.get(id);
   }
 
-  getSummary(id: string): Record<string, unknown> | undefined {
+  getSummary(id: string): string | undefined {
     return this.store.get(id)?.summary;
   }
 

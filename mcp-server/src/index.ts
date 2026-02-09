@@ -143,18 +143,47 @@ server.registerTool(
       "parsed data. Reads ParseResult from artifact store. " +
       "Stores MindMapJSON in store. Returns artifactId + summary.",
     inputSchema: {
-      plan: z.record(z.unknown()).describe("ArchitecturePlan from the LLM"),
+      plan: z.object({
+        architecturePattern: z.string(),
+        fileClassifications: z.array(z.object({
+          fileId: z.string(),
+          role: z.string(),
+          confidence: z.number(),
+          importance: z.enum(["core", "supporting", "peripheral"]).optional(),
+        })),
+        groups: z.array(z.object({
+          label: z.string(),
+          kind: z.enum(["layer", "domain", "feature", "infrastructure", "other"]),
+          fileIds: z.array(z.string()),
+          description: z.string().optional(),
+        })),
+        relationships: z.array(z.object({
+          sourceFileId: z.string(),
+          targetFileId: z.string(),
+          rels: z.array(z.string()),
+          annotation: z.string().optional(),
+        })).optional(),
+        presentationOptions: z.object({
+          viewType: z.string().optional(),
+          collapseRules: z.array(z.object({ pattern: z.string(), action: z.string() })).optional(),
+        }).optional(),
+      }).describe("ArchitecturePlan from the LLM"),
       parseArtifactId: z
         .string()
         .describe("Artifact store ID from mindmap.parse"),
-      resolvedFiles: z
-        .record(z.unknown())
-        .describe("ResolvedFiles from mindmap.resolve"),
+      resolvedFiles: z.object({
+        files: z.array(z.object({
+          fileId: z.string(),
+          canonicalPath: z.string(),
+          language: z.string(),
+          sizeBytes: z.number().optional(),
+        })),
+      }).describe("ResolvedFiles from mindmap.resolve"),
       policy: z
         .object({
           edgeAggregation: z.boolean().optional().default(true),
           maxDepth: z.number().optional(),
-          collapseRules: z.array(z.record(z.unknown())).optional(),
+          collapseRules: z.array(z.object({ pattern: z.string(), action: z.string() })).optional(),
           includeSymbolNodes: z.boolean().optional().default(false),
           symbolNodeThreshold: z.number().optional(),
         })
@@ -197,18 +226,11 @@ server.registerTool(
         .describe("Artifact store ID from mindmap.build"),
       validationArtifactId: z
         .string()
+        .optional()
         .describe("Artifact store ID from mindmap.validate"),
-      plan: z.record(z.unknown()).describe("ArchitecturePlan from the LLM"),
       options: z
         .object({
-          emitEvent: z.boolean().optional().default(true),
-          writeFiles: z
-            .object({
-              mindmapPath: z.string().optional(),
-              validationPath: z.string().optional(),
-              planPath: z.string().optional(),
-            })
-            .optional(),
+          writePath: z.string().optional().describe("File path to write MindMapJSON"),
           format: z.enum(["pretty", "compact"]).optional().default("pretty"),
         })
         .optional(),

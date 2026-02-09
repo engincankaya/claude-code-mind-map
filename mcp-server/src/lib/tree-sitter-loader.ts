@@ -15,7 +15,7 @@ const languageCache = new Map<string, Parser.Language>();
 const GRAMMAR_FILES: Record<string, string> = {
   typescript: "tree-sitter-typescript.wasm",
   tsx: "tree-sitter-tsx.wasm",
-  javascript: "tree-sitter-typescript.wasm",
+  javascript: "tree-sitter-javascript.wasm",
   python: "tree-sitter-python.wasm",
   go: "tree-sitter-go.wasm",
   rust: "tree-sitter-rust.wasm",

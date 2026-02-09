@@ -143,10 +143,19 @@ body {
   background: #374151;
   color: #f1f5f9;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+  gap: 6px;
 }
 
 .node--group:hover {
   box-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+}
+
+.node--clickable {
+  cursor: pointer;
+}
+
+.node--clickable:active {
+  transform: scale(0.97);
 }
 
 /* File (leaf) nodes */
@@ -159,6 +168,43 @@ body {
 
 .node--file:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+}
+
+/* ---- Collapse toggle (on group nodes) ---- */
+.collapse-toggle {
+  font-size: 9px;
+  opacity: 0.6;
+  transition: transform 0.25s ease, opacity 0.15s;
+  flex-shrink: 0;
+}
+
+.collapse-toggle--open {
+  transform: rotate(90deg);
+  opacity: 0.8;
+}
+
+.node--group:hover .collapse-toggle {
+  opacity: 1;
+}
+
+/* ---- File count badge (shown when collapsed) ---- */
+.file-count-badge {
+  background: rgba(255, 255, 255, 0.18);
+  color: #d1d5db;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 10px;
+  flex-shrink: 0;
+}
+
+/* ---- Node label ---- */
+.node-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
 }
 
 /* ---- Connector chevrons ---- */
@@ -254,6 +300,302 @@ body {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/* ---- Detail Card (inline /explain) ---- */
+.detail-card {
+  position: absolute;
+  background: #1e293b;
+  color: #e2e8f0;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+  z-index: 20;
+  animation: detail-fadein 0.25s ease-out forwards;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+@keyframes detail-fadein {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #334155;
+}
+
+.detail-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #f8fafc;
+}
+
+.detail-close {
+  background: none;
+  border: none;
+  color: #64748b;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.detail-close:hover {
+  color: #ef4444;
+}
+
+.detail-section {
+  margin-bottom: 10px;
+}
+
+.detail-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+.detail-section-value {
+  color: #cbd5e1;
+  font-size: 12px;
+}
+
+.detail-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.detail-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.detail-badge--group {
+  background: #374151;
+  color: #93c5fd;
+  border: 1px solid #4b5563;
+}
+
+.detail-badge--lang {
+  background: #1e3a5f;
+  color: #7dd3fc;
+}
+
+.detail-badge--core {
+  background: #7f1d1d;
+  color: #fca5a5;
+}
+
+.detail-badge--supporting {
+  background: #713f12;
+  color: #fde68a;
+}
+
+.detail-badge--peripheral {
+  background: #1e3a2e;
+  color: #86efac;
+}
+
+.detail-edge-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.detail-edge-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  transition: background 0.1s;
+}
+
+.detail-edge-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.detail-edge-arrow {
+  color: #475569;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.detail-edge-name {
+  color: #93c5fd;
+  cursor: pointer;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', Consolas, monospace;
+  font-size: 11px;
+}
+
+.detail-edge-name:hover {
+  text-decoration: underline;
+  color: #bfdbfe;
+}
+
+.detail-rel-tag {
+  font-size: 9px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #1e3a5f;
+  color: #7dd3fc;
+  flex-shrink: 0;
+}
+
+.detail-rel--implements {
+  background: #3b1764;
+  color: #c4b5fd;
+}
+
+.detail-rel--uses {
+  background: #1a3a2a;
+  color: #86efac;
+}
+
+.detail-rel--supports {
+  background: #713f12;
+  color: #fde68a;
+}
+
+.detail-cross-group {
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(251, 191, 36, 0.1);
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: 6px;
+  font-size: 11px;
+  color: #fbbf24;
+}
+
+.detail-cross-icon {
+  margin-right: 4px;
+}
+
+/* ---- Detail edge (dashed) ---- */
+.edge-path--detail {
+  stroke: #6366f1;
+  stroke-width: 2;
+  stroke-dasharray: 6 4;
+  opacity: 0.7;
+}
+
+/* ---- Node selection states ---- */
+.node--selected {
+  outline: 2px solid #6366f1;
+  outline-offset: 2px;
+  z-index: 10;
+}
+
+.node--highlighted {
+  outline: 2px solid #f59e0b;
+  outline-offset: 2px;
+  z-index: 10;
+  animation: highlight-pulse 0.6s ease-out;
+}
+
+@keyframes highlight-pulse {
+  0%   { outline-width: 2px; outline-offset: 2px; }
+  50%  { outline-width: 4px; outline-offset: 4px; }
+  100% { outline-width: 2px; outline-offset: 2px; }
+}
+
+/* ---- Detail card — enhanced sections ---- */
+.detail-path {
+  color: #94a3b8;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', Consolas, monospace;
+  font-size: 10.5px;
+  margin-top: 2px;
+}
+
+.detail-role-text {
+  color: #e2e8f0;
+  font-size: 12.5px;
+}
+
+.detail-group-desc {
+  color: #94a3b8;
+  font-size: 11px;
+  margin-left: 4px;
+}
+
+.detail-edge-annotation {
+  color: #64748b;
+  font-size: 10px;
+  font-style: italic;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.detail-cross-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-cross-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: rgba(251, 191, 36, 0.06);
+}
+
+.detail-cross-route {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+.detail-cross-files {
+  font-size: 10.5px;
+  color: #94a3b8;
+  font-family: 'SF Mono', Monaco, 'Cascadia Code', Consolas, monospace;
+}
+
+.detail-summary {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  font-size: 11.5px;
+  color: #c7d2fe;
+  line-height: 1.5;
+}
+
+.detail-badge--confidence {
+  background: #1e293b;
+  color: #94a3b8;
+  border: 1px solid #334155;
+}
+
+.detail-badge--importance {
+  text-transform: capitalize;
+}
+
+.detail-empty {
+  color: #64748b;
+  font-size: 11.5px;
+  font-style: italic;
+  text-align: center;
+  padding: 8px;
 }
 
 /* ---- Error state ---- */

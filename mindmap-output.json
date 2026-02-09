@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generatedAt": "2026-02-08T23:55:44.411Z",
+    "generatedAt": "2026-02-09T01:40:22.414Z",
     "rootPath": "",
-    "view": "hierarchical",
-    "nodeCount": 27,
-    "edgeCount": 38,
+    "view": "horizontal-tree",
+    "nodeCount": 33,
+    "edgeCount": 41,
     "toolVersions": {
       "mcpServer": "0.1.0",
       "treeSitter": "0.24"
@@ -13,11 +13,11 @@
   "nodes": [
     {
       "id": "root",
-      "label": "MCP Server — Layered Architecture (Entry → Tools → Libraries/Languages)",
+      "label": "MCP Server with Pipeline Architecture — 8 sequential tools orchestrated through a shared artifact store, with a Strategy Pattern language layer",
       "kind": "root",
       "type": "architecture",
       "metadata": {
-        "pattern": "MCP Server — Layered Architecture (Entry → Tools → Libraries/Languages)"
+        "pattern": "MCP Server with Pipeline Architecture — 8 sequential tools orchestrated through a shared artifact store, with a Strategy Pattern language layer"
       },
       "confidence": 1
     },
@@ -25,11 +25,11 @@
       "id": "g-90afa6fec4001a24",
       "label": "Server Core",
       "kind": "group",
-      "type": "layer",
+      "type": "infrastructure",
       "parentId": "root",
       "metadata": {
-        "description": "MCP server entry point and shared types",
-        "fileCount": 2
+        "description": "MCP server entry point, shared types, and the artifact store that connects all pipeline stages",
+        "fileCount": 3
       },
       "confidence": 1
     },
@@ -37,13 +37,13 @@
       "id": "f-e8f7ed71d93ad489",
       "label": "index.ts",
       "kind": "file",
-      "type": "MCP server entry point & tool registration",
+      "type": "Server entry point & tool registration orchestrator",
       "parentId": "g-90afa6fec4001a24",
       "metadata": {
         "canonicalPath": "mcp-server/src/index.ts",
         "fileId": "e8f7ed71d93ad489",
         "language": "typescript",
-        "role": "MCP server entry point & tool registration",
+        "role": "Server entry point & tool registration orchestrator",
         "importance": "core"
       },
       "confidence": 0.98
@@ -52,25 +52,40 @@
       "id": "f-b4e6a59725650275",
       "label": "types.ts",
       "kind": "file",
-      "type": "Shared ToolResult type definitions",
+      "type": "Shared tool result types & helpers (ToolResult, jsonResult, errorResult)",
       "parentId": "g-90afa6fec4001a24",
       "metadata": {
         "canonicalPath": "mcp-server/src/types.ts",
         "fileId": "b4e6a59725650275",
         "language": "typescript",
-        "role": "Shared ToolResult type definitions",
+        "role": "Shared tool result types & helpers (ToolResult, jsonResult, errorResult)",
         "importance": "core"
       },
       "confidence": 0.95
     },
     {
-      "id": "g-a75d3372ac225d18",
-      "label": "Tool Handlers",
+      "id": "f-7877a9d693b32198",
+      "label": "artifact-store.ts",
+      "kind": "file",
+      "type": "Artifact store — in-memory data bus between pipeline stages",
+      "parentId": "g-90afa6fec4001a24",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/lib/artifact-store.ts",
+        "fileId": "7877a9d693b32198",
+        "language": "typescript",
+        "role": "Artifact store — in-memory data bus between pipeline stages",
+        "importance": "core"
+      },
+      "confidence": 0.97
+    },
+    {
+      "id": "g-23e0bf0c9875729a",
+      "label": "Pipeline Tools",
       "kind": "group",
       "type": "feature",
       "parentId": "root",
       "metadata": {
-        "description": "8 MCP tools forming the mind map generation pipeline",
+        "description": "8 MCP tools forming the mind map generation pipeline: scan → resolve → context → parse → sample → build → validate → publish",
         "fileCount": 8
       },
       "confidence": 1
@@ -79,58 +94,58 @@
       "id": "f-d69795c6d50526f3",
       "label": "scan.ts",
       "kind": "file",
-      "type": "scan tool handler — file discovery",
-      "parentId": "g-a75d3372ac225d18",
+      "type": "Pipeline Stage 1: File discovery with configurable ignore patterns",
+      "parentId": "g-23e0bf0c9875729a",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/scan.ts",
         "fileId": "d69795c6d50526f3",
         "language": "typescript",
-        "role": "scan tool handler — file discovery",
-        "importance": "core"
+        "role": "Pipeline Stage 1: File discovery with configurable ignore patterns",
+        "importance": "supporting"
       },
-      "confidence": 0.95
+      "confidence": 0.9
     },
     {
       "id": "f-319363d430e9d9bc",
       "label": "resolve.ts",
       "kind": "file",
-      "type": "resolve tool handler — file ID & hash",
-      "parentId": "g-a75d3372ac225d18",
+      "type": "Pipeline Stage 2: File path canonicalization, language detection, content hashing",
+      "parentId": "g-23e0bf0c9875729a",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/resolve.ts",
         "fileId": "319363d430e9d9bc",
         "language": "typescript",
-        "role": "resolve tool handler — file ID & hash",
-        "importance": "core"
+        "role": "Pipeline Stage 2: File path canonicalization, language detection, content hashing",
+        "importance": "supporting"
       },
-      "confidence": 0.95
+      "confidence": 0.9
     },
     {
       "id": "f-f23002dfc341cd9c",
       "label": "context.ts",
       "kind": "file",
-      "type": "context tool handler — project metadata",
-      "parentId": "g-a75d3372ac225d18",
+      "type": "Pipeline Stage 3: Project metadata extraction (package managers, configs, folder structure)",
+      "parentId": "g-23e0bf0c9875729a",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/context.ts",
         "fileId": "f23002dfc341cd9c",
         "language": "typescript",
-        "role": "context tool handler — project metadata",
-        "importance": "core"
+        "role": "Pipeline Stage 3: Project metadata extraction (package managers, configs, folder structure)",
+        "importance": "supporting"
       },
-      "confidence": 0.95
+      "confidence": 0.93
     },
     {
       "id": "f-049ee2f92b096d77",
       "label": "parse.ts",
       "kind": "file",
-      "type": "parse tool handler — Tree-sitter AST analysis",
-      "parentId": "g-a75d3372ac225d18",
+      "type": "Pipeline Stage 4: Multi-language AST parsing with depth levels (summary/standard/detailed)",
+      "parentId": "g-23e0bf0c9875729a",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/parse.ts",
         "fileId": "049ee2f92b096d77",
         "language": "typescript",
-        "role": "parse tool handler — Tree-sitter AST analysis",
+        "role": "Pipeline Stage 4: Multi-language AST parsing with depth levels (summary/standard/detailed)",
         "importance": "core"
       },
       "confidence": 0.97
@@ -139,28 +154,28 @@
       "id": "f-b49504342ab0a9f7",
       "label": "sample.ts",
       "kind": "file",
-      "type": "sample tool handler — code snippet reader",
-      "parentId": "g-a75d3372ac225d18",
+      "type": "Pipeline Stage 5: Source code snippet reader by line range",
+      "parentId": "g-23e0bf0c9875729a",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/sample.ts",
         "fileId": "b49504342ab0a9f7",
         "language": "typescript",
-        "role": "sample tool handler — code snippet reader",
+        "role": "Pipeline Stage 5: Source code snippet reader by line range",
         "importance": "supporting"
       },
-      "confidence": 0.9
+      "confidence": 0.88
     },
     {
       "id": "f-d638059166d4e8e2",
       "label": "build.ts",
       "kind": "file",
-      "type": "build tool handler — graph construction",
-      "parentId": "g-a75d3372ac225d18",
+      "type": "Pipeline Stage 6: Graph construction from ArchitecturePlan + parse data",
+      "parentId": "g-23e0bf0c9875729a",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/build.ts",
         "fileId": "d638059166d4e8e2",
         "language": "typescript",
-        "role": "build tool handler — graph construction",
+        "role": "Pipeline Stage 6: Graph construction from ArchitecturePlan + parse data",
         "importance": "core"
       },
       "confidence": 0.97
@@ -169,28 +184,28 @@
       "id": "f-37a1e3ff7092236b",
       "label": "validate.ts",
       "kind": "file",
-      "type": "validate tool handler — graph integrity check",
-      "parentId": "g-a75d3372ac225d18",
+      "type": "Pipeline Stage 7: Graph integrity validation (orphans, broken edges, cycles, duplicates)",
+      "parentId": "g-23e0bf0c9875729a",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/validate.ts",
         "fileId": "37a1e3ff7092236b",
         "language": "typescript",
-        "role": "validate tool handler — graph integrity check",
-        "importance": "core"
+        "role": "Pipeline Stage 7: Graph integrity validation (orphans, broken edges, cycles, duplicates)",
+        "importance": "supporting"
       },
-      "confidence": 0.95
+      "confidence": 0.93
     },
     {
       "id": "f-0f11ab0fd4984fda",
       "label": "publish.ts",
       "kind": "file",
-      "type": "publish tool handler — final output",
-      "parentId": "g-a75d3372ac225d18",
+      "type": "Pipeline Stage 8: Final output — writes MindMapJSON to disk & structured output",
+      "parentId": "g-23e0bf0c9875729a",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/publish.ts",
         "fileId": "0f11ab0fd4984fda",
         "language": "typescript",
-        "role": "publish tool handler — final output",
+        "role": "Pipeline Stage 8: Final output — writes MindMapJSON to disk & structured output",
         "importance": "core"
       },
       "confidence": 0.95
@@ -202,37 +217,37 @@
       "type": "domain",
       "parentId": "root",
       "metadata": {
-        "description": "Tree-sitter AST normalizers for supported languages",
+        "description": "Strategy pattern: registry dispatches to language-specific AST normalizers for extracting imports, exports, and symbols",
         "fileCount": 7
       },
       "confidence": 1
     },
     {
-      "id": "f-e5546eb9121295ca",
-      "label": "types.ts",
-      "kind": "file",
-      "type": "Language normalizer interfaces & types",
-      "parentId": "g-77c9f5ccaf617693",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/languages/types.ts",
-        "fileId": "e5546eb9121295ca",
-        "language": "typescript",
-        "role": "Language normalizer interfaces & types",
-        "importance": "core"
-      },
-      "confidence": 0.95
-    },
-    {
       "id": "f-71804e438b80b7b3",
       "label": "registry.ts",
       "kind": "file",
-      "type": "Normalizer registry — language lookup",
+      "type": "Language normalizer registry — strategy pattern dispatcher",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/registry.ts",
         "fileId": "71804e438b80b7b3",
         "language": "typescript",
-        "role": "Normalizer registry — language lookup",
+        "role": "Language normalizer registry — strategy pattern dispatcher",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "f-e5546eb9121295ca",
+      "label": "types.ts",
+      "kind": "file",
+      "type": "Language normalizer interface & shared AST types (SymbolInfo, ImportInfo, etc.)",
+      "parentId": "g-77c9f5ccaf617693",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/types.ts",
+        "fileId": "e5546eb9121295ca",
+        "language": "typescript",
+        "role": "Language normalizer interface & shared AST types (SymbolInfo, ImportInfo, etc.)",
         "importance": "core"
       },
       "confidence": 0.95
@@ -241,143 +256,185 @@
       "id": "f-53e403f99bb9ad8b",
       "label": "normalizer.ts",
       "kind": "file",
-      "type": "TypeScript language normalizer",
+      "type": "TypeScript/TSX AST normalizer — imports, exports, symbols, type refs",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/typescript/normalizer.ts",
         "fileId": "53e403f99bb9ad8b",
         "language": "typescript",
-        "role": "TypeScript language normalizer",
+        "role": "TypeScript/TSX AST normalizer — imports, exports, symbols, type refs",
         "importance": "supporting"
       },
-      "confidence": 0.92
+      "confidence": 0.93
     },
     {
       "id": "f-23744172e5f5fa22",
       "label": "normalizer.ts",
       "kind": "file",
-      "type": "Python language normalizer",
+      "type": "Python AST normalizer — imports, exports, symbols, docstrings",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/python/normalizer.ts",
         "fileId": "23744172e5f5fa22",
         "language": "typescript",
-        "role": "Python language normalizer",
+        "role": "Python AST normalizer — imports, exports, symbols, docstrings",
         "importance": "supporting"
       },
-      "confidence": 0.92
+      "confidence": 0.9
     },
     {
       "id": "f-5bb2bd36f52477e1",
       "label": "normalizer.ts",
       "kind": "file",
-      "type": "Go language normalizer",
+      "type": "Go AST normalizer — imports, symbols, visibility by capitalization",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/go/normalizer.ts",
         "fileId": "5bb2bd36f52477e1",
         "language": "typescript",
-        "role": "Go language normalizer",
+        "role": "Go AST normalizer — imports, symbols, visibility by capitalization",
         "importance": "supporting"
       },
-      "confidence": 0.92
+      "confidence": 0.9
     },
     {
       "id": "f-6521643ae5a54621",
       "label": "normalizer.ts",
       "kind": "file",
-      "type": "Rust language normalizer",
+      "type": "Rust AST normalizer — use decls, pub visibility, structs/enums/traits",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/rust/normalizer.ts",
         "fileId": "6521643ae5a54621",
         "language": "typescript",
-        "role": "Rust language normalizer",
+        "role": "Rust AST normalizer — use decls, pub visibility, structs/enums/traits",
         "importance": "supporting"
       },
-      "confidence": 0.92
+      "confidence": 0.9
     },
     {
       "id": "f-31630c0b361a7975",
       "label": "normalizer.ts",
       "kind": "file",
-      "type": "Java language normalizer",
+      "type": "Java AST normalizer — imports, annotations, access modifiers",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/java/normalizer.ts",
         "fileId": "31630c0b361a7975",
         "language": "typescript",
-        "role": "Java language normalizer",
+        "role": "Java AST normalizer — imports, annotations, access modifiers",
         "importance": "supporting"
       },
-      "confidence": 0.92
+      "confidence": 0.9
     },
     {
-      "id": "g-ce0cff719a947476",
-      "label": "Infrastructure",
+      "id": "g-4d8f9c074fa0043d",
+      "label": "Infrastructure Libraries",
       "kind": "group",
       "type": "infrastructure",
       "parentId": "root",
       "metadata": {
-        "description": "Shared libraries: artifact store, hashing, Tree-sitter loader",
-        "fileCount": 3
+        "description": "Shared utilities: deterministic hashing for stable IDs, Tree-sitter WASM initialization and parser factory",
+        "fileCount": 2
       },
       "confidence": 1
-    },
-    {
-      "id": "f-7877a9d693b32198",
-      "label": "artifact-store.ts",
-      "kind": "file",
-      "type": "Artifact store — inter-tool data passing",
-      "parentId": "g-ce0cff719a947476",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/lib/artifact-store.ts",
-        "fileId": "7877a9d693b32198",
-        "language": "typescript",
-        "role": "Artifact store — inter-tool data passing",
-        "importance": "core"
-      },
-      "confidence": 0.95
     },
     {
       "id": "f-458b5c84e88c4ab9",
       "label": "hashing.ts",
       "kind": "file",
-      "type": "Hashing utilities (SHA-256, fileId, symbolId)",
-      "parentId": "g-ce0cff719a947476",
+      "type": "Deterministic ID generation (sha256, fileId, symbolId)",
+      "parentId": "g-4d8f9c074fa0043d",
       "metadata": {
         "canonicalPath": "mcp-server/src/lib/hashing.ts",
         "fileId": "458b5c84e88c4ab9",
         "language": "typescript",
-        "role": "Hashing utilities (SHA-256, fileId, symbolId)",
+        "role": "Deterministic ID generation (sha256, fileId, symbolId)",
         "importance": "supporting"
       },
-      "confidence": 0.9
+      "confidence": 0.92
     },
     {
       "id": "f-abfe138c6245bc14",
       "label": "tree-sitter-loader.ts",
       "kind": "file",
       "type": "Tree-sitter WASM loader & parser factory",
-      "parentId": "g-ce0cff719a947476",
+      "parentId": "g-4d8f9c074fa0043d",
       "metadata": {
         "canonicalPath": "mcp-server/src/lib/tree-sitter-loader.ts",
         "fileId": "abfe138c6245bc14",
         "language": "typescript",
         "role": "Tree-sitter WASM loader & parser factory",
-        "importance": "core"
+        "importance": "supporting"
       },
       "confidence": 0.95
     },
     {
-      "id": "g-62773d17d6c151b1",
-      "label": "Build Scripts",
+      "id": "g-b77047cc13c89935",
+      "label": "Frontend Visualization",
+      "kind": "group",
+      "type": "feature",
+      "parentId": "root",
+      "metadata": {
+        "description": "Browser-based mind map viewer with horizontal tree layout, SVG bezier edges, zoom/pan, NotebookLM-inspired styling",
+        "fileCount": 3
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-50c2a84e8f4a513b",
+      "label": "app.js",
+      "kind": "file",
+      "type": "Frontend visualization — horizontal tree layout, SVG edges, zoom/pan",
+      "parentId": "g-b77047cc13c89935",
+      "metadata": {
+        "canonicalPath": "frontend/app.js",
+        "fileId": "50c2a84e8f4a513b",
+        "language": "javascript",
+        "role": "Frontend visualization — horizontal tree layout, SVG edges, zoom/pan",
+        "importance": "supporting"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "f-959f9cada636604d",
+      "label": "index.html",
+      "kind": "file",
+      "type": "Frontend HTML shell — toolbar, viewport, tooltip container",
+      "parentId": "g-b77047cc13c89935",
+      "metadata": {
+        "canonicalPath": "frontend/index.html",
+        "fileId": "959f9cada636604d",
+        "language": "html",
+        "role": "Frontend HTML shell — toolbar, viewport, tooltip container",
+        "importance": "peripheral"
+      },
+      "confidence": 0.85
+    },
+    {
+      "id": "f-679a43711b4b0365",
+      "label": "styles.css",
+      "kind": "file",
+      "type": "Frontend styles — NotebookLM-inspired dark cards on light background",
+      "parentId": "g-b77047cc13c89935",
+      "metadata": {
+        "canonicalPath": "frontend/styles.css",
+        "fileId": "679a43711b4b0365",
+        "language": "css",
+        "role": "Frontend styles — NotebookLM-inspired dark cards on light background",
+        "importance": "peripheral"
+      },
+      "confidence": 0.85
+    },
+    {
+      "id": "g-a30d0163f9f8eef8",
+      "label": "Build & Config",
       "kind": "group",
       "type": "infrastructure",
       "parentId": "root",
       "metadata": {
-        "description": "Development scripts for grammar file management",
-        "fileCount": 1
+        "description": "Build scripts, package manifest, and TypeScript configuration",
+        "fileCount": 3
       },
       "confidence": 1
     },
@@ -385,19 +442,61 @@
       "id": "f-7c82f899da6733ab",
       "label": "copy-grammars.js",
       "kind": "file",
-      "type": "Build script — copy grammar WASM files",
-      "parentId": "g-62773d17d6c151b1",
+      "type": "Build script — copies Tree-sitter WASM grammar files to dist",
+      "parentId": "g-a30d0163f9f8eef8",
       "metadata": {
         "canonicalPath": "mcp-server/scripts/copy-grammars.js",
         "fileId": "7c82f899da6733ab",
         "language": "javascript",
-        "role": "Build script — copy grammar WASM files",
+        "role": "Build script — copies Tree-sitter WASM grammar files to dist",
+        "importance": "peripheral"
+      },
+      "confidence": 0.88
+    },
+    {
+      "id": "f-f3494fd36ee5f868",
+      "label": "package.json",
+      "kind": "file",
+      "type": "Package manifest — dependencies, scripts, MCP server config",
+      "parentId": "g-a30d0163f9f8eef8",
+      "metadata": {
+        "canonicalPath": "mcp-server/package.json",
+        "fileId": "f3494fd36ee5f868",
+        "language": "json",
+        "role": "Package manifest — dependencies, scripts, MCP server config",
         "importance": "peripheral"
       },
       "confidence": 0.85
+    },
+    {
+      "id": "f-3c679b93a3052f8d",
+      "label": "tsconfig.json",
+      "kind": "file",
+      "type": "TypeScript compiler configuration",
+      "parentId": "g-a30d0163f9f8eef8",
+      "metadata": {
+        "canonicalPath": "mcp-server/tsconfig.json",
+        "fileId": "3c679b93a3052f8d",
+        "language": "json",
+        "role": "TypeScript compiler configuration",
+        "importance": "peripheral"
+      },
+      "confidence": 0.8
     }
   ],
   "edges": [
+    {
+      "id": "e-dac7315ea8aa3e44",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "imports"
+      ],
+      "label": "Creates singleton ArtifactStore, passes to all tool handlers",
+      "metadata": {
+        "annotation": "Creates singleton ArtifactStore, passes to all tool handlers"
+      }
+    },
     {
       "id": "e-cecb2ed4f671db16",
       "source": "f-e8f7ed71d93ad489",
@@ -405,9 +504,9 @@
       "rels": [
         "imports"
       ],
-      "label": "handleScan",
+      "label": "Registers scan tool handler",
       "metadata": {
-        "annotation": "handleScan"
+        "annotation": "Registers scan tool handler"
       }
     },
     {
@@ -417,9 +516,9 @@
       "rels": [
         "imports"
       ],
-      "label": "handleResolve",
+      "label": "Registers resolve tool handler",
       "metadata": {
-        "annotation": "handleResolve"
+        "annotation": "Registers resolve tool handler"
       }
     },
     {
@@ -429,9 +528,9 @@
       "rels": [
         "imports"
       ],
-      "label": "handleContext",
+      "label": "Registers context tool handler",
       "metadata": {
-        "annotation": "handleContext"
+        "annotation": "Registers context tool handler"
       }
     },
     {
@@ -441,9 +540,9 @@
       "rels": [
         "imports"
       ],
-      "label": "handleParse",
+      "label": "Registers parse tool handler",
       "metadata": {
-        "annotation": "handleParse"
+        "annotation": "Registers parse tool handler"
       }
     },
     {
@@ -453,9 +552,9 @@
       "rels": [
         "imports"
       ],
-      "label": "handleSample",
+      "label": "Registers sample tool handler",
       "metadata": {
-        "annotation": "handleSample"
+        "annotation": "Registers sample tool handler"
       }
     },
     {
@@ -465,9 +564,9 @@
       "rels": [
         "imports"
       ],
-      "label": "handleBuild",
+      "label": "Registers build tool handler",
       "metadata": {
-        "annotation": "handleBuild"
+        "annotation": "Registers build tool handler"
       }
     },
     {
@@ -477,9 +576,9 @@
       "rels": [
         "imports"
       ],
-      "label": "handleValidate",
+      "label": "Registers validate tool handler",
       "metadata": {
-        "annotation": "handleValidate"
+        "annotation": "Registers validate tool handler"
       }
     },
     {
@@ -489,81 +588,9 @@
       "rels": [
         "imports"
       ],
-      "label": "handlePublish",
+      "label": "Registers publish tool handler",
       "metadata": {
-        "annotation": "handlePublish"
-      }
-    },
-    {
-      "id": "e-dac7315ea8aa3e44",
-      "source": "f-e8f7ed71d93ad489",
-      "target": "f-7877a9d693b32198",
-      "rels": [
-        "imports"
-      ],
-      "label": "ArtifactStore",
-      "metadata": {
-        "annotation": "ArtifactStore"
-      }
-    },
-    {
-      "id": "e-d10a75c191271735",
-      "source": "f-049ee2f92b096d77",
-      "target": "f-abfe138c6245bc14",
-      "rels": [
-        "imports"
-      ],
-      "label": "createParser, getSupportedLanguages",
-      "metadata": {
-        "annotation": "createParser, getSupportedLanguages"
-      }
-    },
-    {
-      "id": "e-703f48a843f1601e",
-      "source": "f-049ee2f92b096d77",
-      "target": "f-71804e438b80b7b3",
-      "rels": [
-        "imports"
-      ],
-      "label": "getNormalizer",
-      "metadata": {
-        "annotation": "getNormalizer"
-      }
-    },
-    {
-      "id": "e-06b736d31f544281",
-      "source": "f-049ee2f92b096d77",
-      "target": "f-e5546eb9121295ca",
-      "rels": [
-        "imports"
-      ],
-      "label": "NormalizerResult, SymbolInfo",
-      "metadata": {
-        "annotation": "NormalizerResult, SymbolInfo"
-      }
-    },
-    {
-      "id": "e-f4973c60cd24f2e0",
-      "source": "f-049ee2f92b096d77",
-      "target": "f-7877a9d693b32198",
-      "rels": [
-        "imports"
-      ],
-      "label": "ArtifactStore",
-      "metadata": {
-        "annotation": "ArtifactStore"
-      }
-    },
-    {
-      "id": "e-0a12d8d374bd9ea1",
-      "source": "f-049ee2f92b096d77",
-      "target": "f-458b5c84e88c4ab9",
-      "rels": [
-        "imports"
-      ],
-      "label": "makeSymbolId",
-      "metadata": {
-        "annotation": "makeSymbolId"
+        "annotation": "Registers publish tool handler"
       }
     },
     {
@@ -573,9 +600,9 @@
       "rels": [
         "imports"
       ],
-      "label": "ArtifactStore",
+      "label": "Reads ParseResult artifact, stores MindMapJSON artifact",
       "metadata": {
-        "annotation": "ArtifactStore"
+        "annotation": "Reads ParseResult artifact, stores MindMapJSON artifact"
       }
     },
     {
@@ -585,237 +612,9 @@
       "rels": [
         "imports"
       ],
-      "label": "sha256Short",
+      "label": "Uses sha256Short for node ID generation",
       "metadata": {
-        "annotation": "sha256Short"
-      }
-    },
-    {
-      "id": "e-79778f666e7d5f8e",
-      "source": "f-37a1e3ff7092236b",
-      "target": "f-7877a9d693b32198",
-      "rels": [
-        "imports"
-      ],
-      "label": "ArtifactStore",
-      "metadata": {
-        "annotation": "ArtifactStore"
-      }
-    },
-    {
-      "id": "e-ceaf587a4eee8862",
-      "source": "f-0f11ab0fd4984fda",
-      "target": "f-7877a9d693b32198",
-      "rels": [
-        "imports"
-      ],
-      "label": "ArtifactStore",
-      "metadata": {
-        "annotation": "ArtifactStore"
-      }
-    },
-    {
-      "id": "e-0074322e080c0ae8",
-      "source": "f-319363d430e9d9bc",
-      "target": "f-458b5c84e88c4ab9",
-      "rels": [
-        "imports"
-      ],
-      "label": "makeFileId, sha256",
-      "metadata": {
-        "annotation": "makeFileId, sha256"
-      }
-    },
-    {
-      "id": "e-c01c5015b168511d",
-      "source": "f-71804e438b80b7b3",
-      "target": "f-53e403f99bb9ad8b",
-      "rels": [
-        "imports"
-      ],
-      "label": "typescriptNormalizer",
-      "metadata": {
-        "annotation": "typescriptNormalizer"
-      }
-    },
-    {
-      "id": "e-76742843f9524e9a",
-      "source": "f-71804e438b80b7b3",
-      "target": "f-23744172e5f5fa22",
-      "rels": [
-        "imports"
-      ],
-      "label": "pythonNormalizer",
-      "metadata": {
-        "annotation": "pythonNormalizer"
-      }
-    },
-    {
-      "id": "e-ab26259581662c5c",
-      "source": "f-71804e438b80b7b3",
-      "target": "f-5bb2bd36f52477e1",
-      "rels": [
-        "imports"
-      ],
-      "label": "goNormalizer",
-      "metadata": {
-        "annotation": "goNormalizer"
-      }
-    },
-    {
-      "id": "e-91bd6c8330233822",
-      "source": "f-71804e438b80b7b3",
-      "target": "f-6521643ae5a54621",
-      "rels": [
-        "imports"
-      ],
-      "label": "rustNormalizer",
-      "metadata": {
-        "annotation": "rustNormalizer"
-      }
-    },
-    {
-      "id": "e-0f7d96da2169e8d4",
-      "source": "f-71804e438b80b7b3",
-      "target": "f-31630c0b361a7975",
-      "rels": [
-        "imports"
-      ],
-      "label": "javaNormalizer",
-      "metadata": {
-        "annotation": "javaNormalizer"
-      }
-    },
-    {
-      "id": "e-8ebf3b9ae057d02a",
-      "source": "f-71804e438b80b7b3",
-      "target": "f-e5546eb9121295ca",
-      "rels": [
-        "imports"
-      ],
-      "label": "LanguageNormalizer",
-      "metadata": {
-        "annotation": "LanguageNormalizer"
-      }
-    },
-    {
-      "id": "e-eb8e4142c3886465",
-      "source": "f-53e403f99bb9ad8b",
-      "target": "f-e5546eb9121295ca",
-      "rels": [
-        "imports"
-      ],
-      "label": "LanguageNormalizer, types",
-      "metadata": {
-        "annotation": "LanguageNormalizer, types"
-      }
-    },
-    {
-      "id": "e-b7e095c5f61d0cad",
-      "source": "f-23744172e5f5fa22",
-      "target": "f-e5546eb9121295ca",
-      "rels": [
-        "imports"
-      ],
-      "label": "LanguageNormalizer, types",
-      "metadata": {
-        "annotation": "LanguageNormalizer, types"
-      }
-    },
-    {
-      "id": "e-8014623a24f5bc03",
-      "source": "f-5bb2bd36f52477e1",
-      "target": "f-e5546eb9121295ca",
-      "rels": [
-        "imports"
-      ],
-      "label": "LanguageNormalizer, types",
-      "metadata": {
-        "annotation": "LanguageNormalizer, types"
-      }
-    },
-    {
-      "id": "e-c9ee5472c9db914b",
-      "source": "f-6521643ae5a54621",
-      "target": "f-e5546eb9121295ca",
-      "rels": [
-        "imports"
-      ],
-      "label": "LanguageNormalizer, types",
-      "metadata": {
-        "annotation": "LanguageNormalizer, types"
-      }
-    },
-    {
-      "id": "e-65fdcdfef0cf2c4c",
-      "source": "f-31630c0b361a7975",
-      "target": "f-e5546eb9121295ca",
-      "rels": [
-        "imports"
-      ],
-      "label": "LanguageNormalizer, types",
-      "metadata": {
-        "annotation": "LanguageNormalizer, types"
-      }
-    },
-    {
-      "id": "e-b54c3b6f0de15d2d",
-      "source": "f-d69795c6d50526f3",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "ToolResult, jsonResult, errorResult",
-      "metadata": {
-        "annotation": "ToolResult, jsonResult, errorResult"
-      }
-    },
-    {
-      "id": "e-eff549d9054d24ef",
-      "source": "f-319363d430e9d9bc",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "ToolResult, jsonResult, errorResult",
-      "metadata": {
-        "annotation": "ToolResult, jsonResult, errorResult"
-      }
-    },
-    {
-      "id": "e-b36771438d7f995b",
-      "source": "f-f23002dfc341cd9c",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "ToolResult, jsonResult, errorResult",
-      "metadata": {
-        "annotation": "ToolResult, jsonResult, errorResult"
-      }
-    },
-    {
-      "id": "e-effad4345849e4af",
-      "source": "f-049ee2f92b096d77",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "ToolResult, jsonResult, errorResult",
-      "metadata": {
-        "annotation": "ToolResult, jsonResult, errorResult"
-      }
-    },
-    {
-      "id": "e-1350ed3dc87753b7",
-      "source": "f-b49504342ab0a9f7",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "ToolResult, jsonResult, errorResult",
-      "metadata": {
-        "annotation": "ToolResult, jsonResult, errorResult"
+        "annotation": "Uses sha256Short for node ID generation"
       }
     },
     {
@@ -825,21 +624,93 @@
       "rels": [
         "imports"
       ],
-      "label": "ToolResult, jsonResult, errorResult",
+      "label": "Uses ToolResult, jsonResult, errorResult",
       "metadata": {
-        "annotation": "ToolResult, jsonResult, errorResult"
+        "annotation": "Uses ToolResult, jsonResult, errorResult"
       }
     },
     {
-      "id": "e-ccfba87f166add39",
-      "source": "f-37a1e3ff7092236b",
+      "id": "e-f4973c60cd24f2e0",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "imports"
+      ],
+      "label": "Stores ParseResult artifact for downstream tools",
+      "metadata": {
+        "annotation": "Stores ParseResult artifact for downstream tools"
+      }
+    },
+    {
+      "id": "e-d10a75c191271735",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-abfe138c6245bc14",
+      "rels": [
+        "imports"
+      ],
+      "label": "Creates Tree-sitter parsers for each language",
+      "metadata": {
+        "annotation": "Creates Tree-sitter parsers for each language"
+      }
+    },
+    {
+      "id": "e-0a12d8d374bd9ea1",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-458b5c84e88c4ab9",
+      "rels": [
+        "imports"
+      ],
+      "label": "Uses symbolId for deterministic symbol IDs",
+      "metadata": {
+        "annotation": "Uses symbolId for deterministic symbol IDs"
+      }
+    },
+    {
+      "id": "e-703f48a843f1601e",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-71804e438b80b7b3",
+      "rels": [
+        "imports"
+      ],
+      "label": "Gets language-specific normalizer from registry",
+      "metadata": {
+        "annotation": "Gets language-specific normalizer from registry"
+      }
+    },
+    {
+      "id": "e-06b736d31f544281",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "Uses NormalizerResult, SymbolInfo types",
+      "metadata": {
+        "annotation": "Uses NormalizerResult, SymbolInfo types"
+      }
+    },
+    {
+      "id": "e-effad4345849e4af",
+      "source": "f-049ee2f92b096d77",
       "target": "f-b4e6a59725650275",
       "rels": [
         "imports"
       ],
-      "label": "ToolResult, jsonResult, errorResult",
+      "label": "Uses ToolResult types",
       "metadata": {
-        "annotation": "ToolResult, jsonResult, errorResult"
+        "annotation": "Uses ToolResult types"
+      }
+    },
+    {
+      "id": "e-ceaf587a4eee8862",
+      "source": "f-0f11ab0fd4984fda",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "imports"
+      ],
+      "label": "Reads MindMapJSON artifact for final output",
+      "metadata": {
+        "annotation": "Reads MindMapJSON artifact for final output"
       }
     },
     {
@@ -849,9 +720,261 @@
       "rels": [
         "imports"
       ],
-      "label": "ToolResult, errorResult",
+      "label": "Uses ToolResult, errorResult",
       "metadata": {
-        "annotation": "ToolResult, errorResult"
+        "annotation": "Uses ToolResult, errorResult"
+      }
+    },
+    {
+      "id": "e-79778f666e7d5f8e",
+      "source": "f-37a1e3ff7092236b",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "imports"
+      ],
+      "label": "Reads MindMapJSON artifact for validation",
+      "metadata": {
+        "annotation": "Reads MindMapJSON artifact for validation"
+      }
+    },
+    {
+      "id": "e-ccfba87f166add39",
+      "source": "f-37a1e3ff7092236b",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "Uses ToolResult types",
+      "metadata": {
+        "annotation": "Uses ToolResult types"
+      }
+    },
+    {
+      "id": "e-b36771438d7f995b",
+      "source": "f-f23002dfc341cd9c",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "Uses ToolResult types",
+      "metadata": {
+        "annotation": "Uses ToolResult types"
+      }
+    },
+    {
+      "id": "e-eff549d9054d24ef",
+      "source": "f-319363d430e9d9bc",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "Uses ToolResult types",
+      "metadata": {
+        "annotation": "Uses ToolResult types"
+      }
+    },
+    {
+      "id": "e-0074322e080c0ae8",
+      "source": "f-319363d430e9d9bc",
+      "target": "f-458b5c84e88c4ab9",
+      "rels": [
+        "imports"
+      ],
+      "label": "Uses fileId and sha256 for content hashing",
+      "metadata": {
+        "annotation": "Uses fileId and sha256 for content hashing"
+      }
+    },
+    {
+      "id": "e-1350ed3dc87753b7",
+      "source": "f-b49504342ab0a9f7",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "Uses ToolResult types",
+      "metadata": {
+        "annotation": "Uses ToolResult types"
+      }
+    },
+    {
+      "id": "e-b54c3b6f0de15d2d",
+      "source": "f-d69795c6d50526f3",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "Uses ToolResult types",
+      "metadata": {
+        "annotation": "Uses ToolResult types"
+      }
+    },
+    {
+      "id": "e-8ebf3b9ae057d02a",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "Imports LanguageNormalizer interface",
+      "metadata": {
+        "annotation": "Imports LanguageNormalizer interface"
+      }
+    },
+    {
+      "id": "e-c01c5015b168511d",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-53e403f99bb9ad8b",
+      "rels": [
+        "imports"
+      ],
+      "label": "Registers TypeScript normalizer",
+      "metadata": {
+        "annotation": "Registers TypeScript normalizer"
+      }
+    },
+    {
+      "id": "e-76742843f9524e9a",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-23744172e5f5fa22",
+      "rels": [
+        "imports"
+      ],
+      "label": "Registers Python normalizer",
+      "metadata": {
+        "annotation": "Registers Python normalizer"
+      }
+    },
+    {
+      "id": "e-ab26259581662c5c",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-5bb2bd36f52477e1",
+      "rels": [
+        "imports"
+      ],
+      "label": "Registers Go normalizer",
+      "metadata": {
+        "annotation": "Registers Go normalizer"
+      }
+    },
+    {
+      "id": "e-91bd6c8330233822",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-6521643ae5a54621",
+      "rels": [
+        "imports"
+      ],
+      "label": "Registers Rust normalizer",
+      "metadata": {
+        "annotation": "Registers Rust normalizer"
+      }
+    },
+    {
+      "id": "e-0f7d96da2169e8d4",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-31630c0b361a7975",
+      "rels": [
+        "imports"
+      ],
+      "label": "Registers Java normalizer",
+      "metadata": {
+        "annotation": "Registers Java normalizer"
+      }
+    },
+    {
+      "id": "e-eb8e4142c3886465",
+      "source": "f-53e403f99bb9ad8b",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "implements"
+      ],
+      "label": "Implements LanguageNormalizer interface for TypeScript",
+      "metadata": {
+        "annotation": "Implements LanguageNormalizer interface for TypeScript"
+      }
+    },
+    {
+      "id": "e-b7e095c5f61d0cad",
+      "source": "f-23744172e5f5fa22",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "implements"
+      ],
+      "label": "Implements LanguageNormalizer interface for Python",
+      "metadata": {
+        "annotation": "Implements LanguageNormalizer interface for Python"
+      }
+    },
+    {
+      "id": "e-8014623a24f5bc03",
+      "source": "f-5bb2bd36f52477e1",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "implements"
+      ],
+      "label": "Implements LanguageNormalizer interface for Go",
+      "metadata": {
+        "annotation": "Implements LanguageNormalizer interface for Go"
+      }
+    },
+    {
+      "id": "e-c9ee5472c9db914b",
+      "source": "f-6521643ae5a54621",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "implements"
+      ],
+      "label": "Implements LanguageNormalizer interface for Rust",
+      "metadata": {
+        "annotation": "Implements LanguageNormalizer interface for Rust"
+      }
+    },
+    {
+      "id": "e-65fdcdfef0cf2c4c",
+      "source": "f-31630c0b361a7975",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "implements"
+      ],
+      "label": "Implements LanguageNormalizer interface for Java",
+      "metadata": {
+        "annotation": "Implements LanguageNormalizer interface for Java"
+      }
+    },
+    {
+      "id": "e-2e35c5ce68371c6f",
+      "source": "f-50c2a84e8f4a513b",
+      "target": "f-959f9cada636604d",
+      "rels": [
+        "uses"
+      ],
+      "label": "Queries DOM elements defined in HTML",
+      "metadata": {
+        "annotation": "Queries DOM elements defined in HTML"
+      }
+    },
+    {
+      "id": "e-78db9707cc421ecf",
+      "source": "f-50c2a84e8f4a513b",
+      "target": "f-679a43711b4b0365",
+      "rels": [
+        "uses"
+      ],
+      "label": "Relies on CSS classes for node styling",
+      "metadata": {
+        "annotation": "Relies on CSS classes for node styling"
+      }
+    },
+    {
+      "id": "e-3ce58e38b1e71f47",
+      "source": "f-7c82f899da6733ab",
+      "target": "f-abfe138c6245bc14",
+      "rels": [
+        "supports"
+      ],
+      "label": "Copies WASM grammars that tree-sitter-loader consumes at runtime",
+      "metadata": {
+        "annotation": "Copies WASM grammars that tree-sitter-loader consumes at runtime"
       }
     }
   ]

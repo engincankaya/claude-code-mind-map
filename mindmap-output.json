@@ -1,10 +1,10 @@
 {
   "meta": {
-    "generatedAt": "2026-02-09T01:40:22.414Z",
+    "generatedAt": "2026-02-09T09:55:08.026Z",
     "rootPath": "",
-    "view": "horizontal-tree",
-    "nodeCount": 33,
-    "edgeCount": 41,
+    "view": "default",
+    "nodeCount": 30,
+    "edgeCount": 40,
     "toolVersions": {
       "mcpServer": "0.1.0",
       "treeSitter": "0.24"
@@ -13,370 +13,22 @@
   "nodes": [
     {
       "id": "root",
-      "label": "MCP Server with Pipeline Architecture — 8 sequential tools orchestrated through a shared artifact store, with a Strategy Pattern language layer",
+      "label": "MCP Sunucu + Frontend Monorepo",
       "kind": "root",
       "type": "architecture",
       "metadata": {
-        "pattern": "MCP Server with Pipeline Architecture — 8 sequential tools orchestrated through a shared artifact store, with a Strategy Pattern language layer"
+        "pattern": "MCP Sunucu + Frontend Monorepo"
       },
       "confidence": 1
     },
     {
-      "id": "g-90afa6fec4001a24",
-      "label": "Server Core",
+      "id": "g-af48bcf0b9511b39",
+      "label": "Frontend",
       "kind": "group",
-      "type": "infrastructure",
+      "type": "layer",
       "parentId": "root",
       "metadata": {
-        "description": "MCP server entry point, shared types, and the artifact store that connects all pipeline stages",
-        "fileCount": 3
-      },
-      "confidence": 1
-    },
-    {
-      "id": "f-e8f7ed71d93ad489",
-      "label": "index.ts",
-      "kind": "file",
-      "type": "Server entry point & tool registration orchestrator",
-      "parentId": "g-90afa6fec4001a24",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/index.ts",
-        "fileId": "e8f7ed71d93ad489",
-        "language": "typescript",
-        "role": "Server entry point & tool registration orchestrator",
-        "importance": "core"
-      },
-      "confidence": 0.98
-    },
-    {
-      "id": "f-b4e6a59725650275",
-      "label": "types.ts",
-      "kind": "file",
-      "type": "Shared tool result types & helpers (ToolResult, jsonResult, errorResult)",
-      "parentId": "g-90afa6fec4001a24",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/types.ts",
-        "fileId": "b4e6a59725650275",
-        "language": "typescript",
-        "role": "Shared tool result types & helpers (ToolResult, jsonResult, errorResult)",
-        "importance": "core"
-      },
-      "confidence": 0.95
-    },
-    {
-      "id": "f-7877a9d693b32198",
-      "label": "artifact-store.ts",
-      "kind": "file",
-      "type": "Artifact store — in-memory data bus between pipeline stages",
-      "parentId": "g-90afa6fec4001a24",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/lib/artifact-store.ts",
-        "fileId": "7877a9d693b32198",
-        "language": "typescript",
-        "role": "Artifact store — in-memory data bus between pipeline stages",
-        "importance": "core"
-      },
-      "confidence": 0.97
-    },
-    {
-      "id": "g-23e0bf0c9875729a",
-      "label": "Pipeline Tools",
-      "kind": "group",
-      "type": "feature",
-      "parentId": "root",
-      "metadata": {
-        "description": "8 MCP tools forming the mind map generation pipeline: scan → resolve → context → parse → sample → build → validate → publish",
-        "fileCount": 8
-      },
-      "confidence": 1
-    },
-    {
-      "id": "f-d69795c6d50526f3",
-      "label": "scan.ts",
-      "kind": "file",
-      "type": "Pipeline Stage 1: File discovery with configurable ignore patterns",
-      "parentId": "g-23e0bf0c9875729a",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/scan.ts",
-        "fileId": "d69795c6d50526f3",
-        "language": "typescript",
-        "role": "Pipeline Stage 1: File discovery with configurable ignore patterns",
-        "importance": "supporting"
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "f-319363d430e9d9bc",
-      "label": "resolve.ts",
-      "kind": "file",
-      "type": "Pipeline Stage 2: File path canonicalization, language detection, content hashing",
-      "parentId": "g-23e0bf0c9875729a",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/resolve.ts",
-        "fileId": "319363d430e9d9bc",
-        "language": "typescript",
-        "role": "Pipeline Stage 2: File path canonicalization, language detection, content hashing",
-        "importance": "supporting"
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "f-f23002dfc341cd9c",
-      "label": "context.ts",
-      "kind": "file",
-      "type": "Pipeline Stage 3: Project metadata extraction (package managers, configs, folder structure)",
-      "parentId": "g-23e0bf0c9875729a",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/context.ts",
-        "fileId": "f23002dfc341cd9c",
-        "language": "typescript",
-        "role": "Pipeline Stage 3: Project metadata extraction (package managers, configs, folder structure)",
-        "importance": "supporting"
-      },
-      "confidence": 0.93
-    },
-    {
-      "id": "f-049ee2f92b096d77",
-      "label": "parse.ts",
-      "kind": "file",
-      "type": "Pipeline Stage 4: Multi-language AST parsing with depth levels (summary/standard/detailed)",
-      "parentId": "g-23e0bf0c9875729a",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/parse.ts",
-        "fileId": "049ee2f92b096d77",
-        "language": "typescript",
-        "role": "Pipeline Stage 4: Multi-language AST parsing with depth levels (summary/standard/detailed)",
-        "importance": "core"
-      },
-      "confidence": 0.97
-    },
-    {
-      "id": "f-b49504342ab0a9f7",
-      "label": "sample.ts",
-      "kind": "file",
-      "type": "Pipeline Stage 5: Source code snippet reader by line range",
-      "parentId": "g-23e0bf0c9875729a",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/sample.ts",
-        "fileId": "b49504342ab0a9f7",
-        "language": "typescript",
-        "role": "Pipeline Stage 5: Source code snippet reader by line range",
-        "importance": "supporting"
-      },
-      "confidence": 0.88
-    },
-    {
-      "id": "f-d638059166d4e8e2",
-      "label": "build.ts",
-      "kind": "file",
-      "type": "Pipeline Stage 6: Graph construction from ArchitecturePlan + parse data",
-      "parentId": "g-23e0bf0c9875729a",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/build.ts",
-        "fileId": "d638059166d4e8e2",
-        "language": "typescript",
-        "role": "Pipeline Stage 6: Graph construction from ArchitecturePlan + parse data",
-        "importance": "core"
-      },
-      "confidence": 0.97
-    },
-    {
-      "id": "f-37a1e3ff7092236b",
-      "label": "validate.ts",
-      "kind": "file",
-      "type": "Pipeline Stage 7: Graph integrity validation (orphans, broken edges, cycles, duplicates)",
-      "parentId": "g-23e0bf0c9875729a",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/validate.ts",
-        "fileId": "37a1e3ff7092236b",
-        "language": "typescript",
-        "role": "Pipeline Stage 7: Graph integrity validation (orphans, broken edges, cycles, duplicates)",
-        "importance": "supporting"
-      },
-      "confidence": 0.93
-    },
-    {
-      "id": "f-0f11ab0fd4984fda",
-      "label": "publish.ts",
-      "kind": "file",
-      "type": "Pipeline Stage 8: Final output — writes MindMapJSON to disk & structured output",
-      "parentId": "g-23e0bf0c9875729a",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/publish.ts",
-        "fileId": "0f11ab0fd4984fda",
-        "language": "typescript",
-        "role": "Pipeline Stage 8: Final output — writes MindMapJSON to disk & structured output",
-        "importance": "core"
-      },
-      "confidence": 0.95
-    },
-    {
-      "id": "g-77c9f5ccaf617693",
-      "label": "Language Normalizers",
-      "kind": "group",
-      "type": "domain",
-      "parentId": "root",
-      "metadata": {
-        "description": "Strategy pattern: registry dispatches to language-specific AST normalizers for extracting imports, exports, and symbols",
-        "fileCount": 7
-      },
-      "confidence": 1
-    },
-    {
-      "id": "f-71804e438b80b7b3",
-      "label": "registry.ts",
-      "kind": "file",
-      "type": "Language normalizer registry — strategy pattern dispatcher",
-      "parentId": "g-77c9f5ccaf617693",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/languages/registry.ts",
-        "fileId": "71804e438b80b7b3",
-        "language": "typescript",
-        "role": "Language normalizer registry — strategy pattern dispatcher",
-        "importance": "core"
-      },
-      "confidence": 0.95
-    },
-    {
-      "id": "f-e5546eb9121295ca",
-      "label": "types.ts",
-      "kind": "file",
-      "type": "Language normalizer interface & shared AST types (SymbolInfo, ImportInfo, etc.)",
-      "parentId": "g-77c9f5ccaf617693",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/languages/types.ts",
-        "fileId": "e5546eb9121295ca",
-        "language": "typescript",
-        "role": "Language normalizer interface & shared AST types (SymbolInfo, ImportInfo, etc.)",
-        "importance": "core"
-      },
-      "confidence": 0.95
-    },
-    {
-      "id": "f-53e403f99bb9ad8b",
-      "label": "normalizer.ts",
-      "kind": "file",
-      "type": "TypeScript/TSX AST normalizer — imports, exports, symbols, type refs",
-      "parentId": "g-77c9f5ccaf617693",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/languages/typescript/normalizer.ts",
-        "fileId": "53e403f99bb9ad8b",
-        "language": "typescript",
-        "role": "TypeScript/TSX AST normalizer — imports, exports, symbols, type refs",
-        "importance": "supporting"
-      },
-      "confidence": 0.93
-    },
-    {
-      "id": "f-23744172e5f5fa22",
-      "label": "normalizer.ts",
-      "kind": "file",
-      "type": "Python AST normalizer — imports, exports, symbols, docstrings",
-      "parentId": "g-77c9f5ccaf617693",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/languages/python/normalizer.ts",
-        "fileId": "23744172e5f5fa22",
-        "language": "typescript",
-        "role": "Python AST normalizer — imports, exports, symbols, docstrings",
-        "importance": "supporting"
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "f-5bb2bd36f52477e1",
-      "label": "normalizer.ts",
-      "kind": "file",
-      "type": "Go AST normalizer — imports, symbols, visibility by capitalization",
-      "parentId": "g-77c9f5ccaf617693",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/languages/go/normalizer.ts",
-        "fileId": "5bb2bd36f52477e1",
-        "language": "typescript",
-        "role": "Go AST normalizer — imports, symbols, visibility by capitalization",
-        "importance": "supporting"
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "f-6521643ae5a54621",
-      "label": "normalizer.ts",
-      "kind": "file",
-      "type": "Rust AST normalizer — use decls, pub visibility, structs/enums/traits",
-      "parentId": "g-77c9f5ccaf617693",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/languages/rust/normalizer.ts",
-        "fileId": "6521643ae5a54621",
-        "language": "typescript",
-        "role": "Rust AST normalizer — use decls, pub visibility, structs/enums/traits",
-        "importance": "supporting"
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "f-31630c0b361a7975",
-      "label": "normalizer.ts",
-      "kind": "file",
-      "type": "Java AST normalizer — imports, annotations, access modifiers",
-      "parentId": "g-77c9f5ccaf617693",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/languages/java/normalizer.ts",
-        "fileId": "31630c0b361a7975",
-        "language": "typescript",
-        "role": "Java AST normalizer — imports, annotations, access modifiers",
-        "importance": "supporting"
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "g-4d8f9c074fa0043d",
-      "label": "Infrastructure Libraries",
-      "kind": "group",
-      "type": "infrastructure",
-      "parentId": "root",
-      "metadata": {
-        "description": "Shared utilities: deterministic hashing for stable IDs, Tree-sitter WASM initialization and parser factory",
-        "fileCount": 2
-      },
-      "confidence": 1
-    },
-    {
-      "id": "f-458b5c84e88c4ab9",
-      "label": "hashing.ts",
-      "kind": "file",
-      "type": "Deterministic ID generation (sha256, fileId, symbolId)",
-      "parentId": "g-4d8f9c074fa0043d",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/lib/hashing.ts",
-        "fileId": "458b5c84e88c4ab9",
-        "language": "typescript",
-        "role": "Deterministic ID generation (sha256, fileId, symbolId)",
-        "importance": "supporting"
-      },
-      "confidence": 0.92
-    },
-    {
-      "id": "f-abfe138c6245bc14",
-      "label": "tree-sitter-loader.ts",
-      "kind": "file",
-      "type": "Tree-sitter WASM loader & parser factory",
-      "parentId": "g-4d8f9c074fa0043d",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/lib/tree-sitter-loader.ts",
-        "fileId": "abfe138c6245bc14",
-        "language": "typescript",
-        "role": "Tree-sitter WASM loader & parser factory",
-        "importance": "supporting"
-      },
-      "confidence": 0.95
-    },
-    {
-      "id": "g-b77047cc13c89935",
-      "label": "Frontend Visualization",
-      "kind": "group",
-      "type": "feature",
-      "parentId": "root",
-      "metadata": {
-        "description": "Browser-based mind map viewer with horizontal tree layout, SVG bezier edges, zoom/pan, NotebookLM-inspired styling",
+        "description": "Tarayıcı tabanlı zihin haritası görselleştirme katmanı — etkileşimli ağaç görünümü, detay kartları ve zoom/pan kontrolü",
         "fileCount": 3
       },
       "confidence": 1
@@ -385,152 +37,422 @@
       "id": "f-50c2a84e8f4a513b",
       "label": "app.js",
       "kind": "file",
-      "type": "Frontend visualization — horizontal tree layout, SVG edges, zoom/pan",
-      "parentId": "g-b77047cc13c89935",
+      "type": "Frontend ana uygulama — zihin haritası görselleştirme, ağaç yapısı, detay kartları, kullanıcı etkileşimleri",
+      "parentId": "g-af48bcf0b9511b39",
       "metadata": {
         "canonicalPath": "frontend/app.js",
         "fileId": "50c2a84e8f4a513b",
         "language": "javascript",
-        "role": "Frontend visualization — horizontal tree layout, SVG edges, zoom/pan",
-        "importance": "supporting"
+        "role": "Frontend ana uygulama — zihin haritası görselleştirme, ağaç yapısı, detay kartları, kullanıcı etkileşimleri",
+        "importance": "core"
       },
-      "confidence": 0.92
+      "confidence": 0.97
     },
     {
       "id": "f-959f9cada636604d",
       "label": "index.html",
       "kind": "file",
-      "type": "Frontend HTML shell — toolbar, viewport, tooltip container",
-      "parentId": "g-b77047cc13c89935",
+      "type": "HTML iskelet dosyası — viewport, toolbar ve tooltip DOM yapısı",
+      "parentId": "g-af48bcf0b9511b39",
       "metadata": {
         "canonicalPath": "frontend/index.html",
         "fileId": "959f9cada636604d",
         "language": "html",
-        "role": "Frontend HTML shell — toolbar, viewport, tooltip container",
-        "importance": "peripheral"
+        "role": "HTML iskelet dosyası — viewport, toolbar ve tooltip DOM yapısı",
+        "importance": "supporting"
       },
-      "confidence": 0.85
+      "confidence": 0.9
     },
     {
       "id": "f-679a43711b4b0365",
       "label": "styles.css",
       "kind": "file",
-      "type": "Frontend styles — NotebookLM-inspired dark cards on light background",
-      "parentId": "g-b77047cc13c89935",
+      "type": "CSS stil dosyası — NotebookLM ilhamlı koyu tema, node ve detay kartı stilleri",
+      "parentId": "g-af48bcf0b9511b39",
       "metadata": {
         "canonicalPath": "frontend/styles.css",
         "fileId": "679a43711b4b0365",
         "language": "css",
-        "role": "Frontend styles — NotebookLM-inspired dark cards on light background",
-        "importance": "peripheral"
+        "role": "CSS stil dosyası — NotebookLM ilhamlı koyu tema, node ve detay kartı stilleri",
+        "importance": "supporting"
       },
-      "confidence": 0.85
+      "confidence": 0.9
     },
     {
-      "id": "g-a30d0163f9f8eef8",
-      "label": "Build & Config",
+      "id": "g-05f0e3866340a188",
+      "label": "MCP Araçları",
       "kind": "group",
-      "type": "infrastructure",
+      "type": "feature",
       "parentId": "root",
       "metadata": {
-        "description": "Build scripts, package manifest, and TypeScript configuration",
-        "fileCount": 3
+        "description": "8 aşamalı pipeline araçları: scan → resolve → context → parse → sample → build → validate → publish",
+        "fileCount": 8
       },
       "confidence": 1
     },
     {
-      "id": "f-7c82f899da6733ab",
-      "label": "copy-grammars.js",
+      "id": "f-d638059166d4e8e2",
+      "label": "build.ts",
       "kind": "file",
-      "type": "Build script — copies Tree-sitter WASM grammar files to dist",
-      "parentId": "g-a30d0163f9f8eef8",
+      "type": "Build tool — LLM'nin mimari planını MindMapJSON grafına dönüştürür",
+      "parentId": "g-05f0e3866340a188",
       "metadata": {
-        "canonicalPath": "mcp-server/scripts/copy-grammars.js",
-        "fileId": "7c82f899da6733ab",
-        "language": "javascript",
-        "role": "Build script — copies Tree-sitter WASM grammar files to dist",
+        "canonicalPath": "mcp-server/src/tools/build.ts",
+        "fileId": "d638059166d4e8e2",
+        "language": "typescript",
+        "role": "Build tool — LLM'nin mimari planını MindMapJSON grafına dönüştürür",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "f-049ee2f92b096d77",
+      "label": "parse.ts",
+      "kind": "file",
+      "type": "Parse tool — Tree-sitter ile kaynak kodu ayrıştırır, sembol çıkarır",
+      "parentId": "g-05f0e3866340a188",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/parse.ts",
+        "fileId": "049ee2f92b096d77",
+        "language": "typescript",
+        "role": "Parse tool — Tree-sitter ile kaynak kodu ayrıştırır, sembol çıkarır",
+        "importance": "core"
+      },
+      "confidence": 0.95
+    },
+    {
+      "id": "f-f23002dfc341cd9c",
+      "label": "context.ts",
+      "kind": "file",
+      "type": "Context tool — proje meta verileri toplar: README, paket yöneticileri, klasör yapısı",
+      "parentId": "g-05f0e3866340a188",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/context.ts",
+        "fileId": "f23002dfc341cd9c",
+        "language": "typescript",
+        "role": "Context tool — proje meta verileri toplar: README, paket yöneticileri, klasör yapısı",
+        "importance": "core"
+      },
+      "confidence": 0.93
+    },
+    {
+      "id": "f-0f11ab0fd4984fda",
+      "label": "publish.ts",
+      "kind": "file",
+      "type": "Publish tool — son adım: artifact'leri paketler, diske yazar, yapılandırılmış çıktı verir",
+      "parentId": "g-05f0e3866340a188",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/publish.ts",
+        "fileId": "0f11ab0fd4984fda",
+        "language": "typescript",
+        "role": "Publish tool — son adım: artifact'leri paketler, diske yazar, yapılandırılmış çıktı verir",
+        "importance": "supporting"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "f-319363d430e9d9bc",
+      "label": "resolve.ts",
+      "kind": "file",
+      "type": "Resolve tool — dosya yollarını kanonikleştirir, fileId ve contentHash üretir",
+      "parentId": "g-05f0e3866340a188",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/resolve.ts",
+        "fileId": "319363d430e9d9bc",
+        "language": "typescript",
+        "role": "Resolve tool — dosya yollarını kanonikleştirir, fileId ve contentHash üretir",
+        "importance": "supporting"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "f-b49504342ab0a9f7",
+      "label": "sample.ts",
+      "kind": "file",
+      "type": "Sample tool — belirli satır aralığından kod parçacığı okur",
+      "parentId": "g-05f0e3866340a188",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/sample.ts",
+        "fileId": "b49504342ab0a9f7",
+        "language": "typescript",
+        "role": "Sample tool — belirli satır aralığından kod parçacığı okur",
         "importance": "peripheral"
       },
       "confidence": 0.88
     },
     {
-      "id": "f-f3494fd36ee5f868",
-      "label": "package.json",
+      "id": "f-d69795c6d50526f3",
+      "label": "scan.ts",
       "kind": "file",
-      "type": "Package manifest — dependencies, scripts, MCP server config",
-      "parentId": "g-a30d0163f9f8eef8",
+      "type": "Scan tool — proje dosyalarını listeler, ignore pattern'leri uygular",
+      "parentId": "g-05f0e3866340a188",
       "metadata": {
-        "canonicalPath": "mcp-server/package.json",
-        "fileId": "f3494fd36ee5f868",
-        "language": "json",
-        "role": "Package manifest — dependencies, scripts, MCP server config",
-        "importance": "peripheral"
+        "canonicalPath": "mcp-server/src/tools/scan.ts",
+        "fileId": "d69795c6d50526f3",
+        "language": "typescript",
+        "role": "Scan tool — proje dosyalarını listeler, ignore pattern'leri uygular",
+        "importance": "supporting"
       },
-      "confidence": 0.85
+      "confidence": 0.9
     },
     {
-      "id": "f-3c679b93a3052f8d",
-      "label": "tsconfig.json",
+      "id": "f-37a1e3ff7092236b",
+      "label": "validate.ts",
       "kind": "file",
-      "type": "TypeScript compiler configuration",
-      "parentId": "g-a30d0163f9f8eef8",
+      "type": "Validate tool — graf bütünlüğü kontrolü: yetim node, kırık edge, döngü tespiti",
+      "parentId": "g-05f0e3866340a188",
       "metadata": {
-        "canonicalPath": "mcp-server/tsconfig.json",
-        "fileId": "3c679b93a3052f8d",
-        "language": "json",
-        "role": "TypeScript compiler configuration",
+        "canonicalPath": "mcp-server/src/tools/validate.ts",
+        "fileId": "37a1e3ff7092236b",
+        "language": "typescript",
+        "role": "Validate tool — graf bütünlüğü kontrolü: yetim node, kırık edge, döngü tespiti",
+        "importance": "supporting"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "g-aa2d05706fff4cd5",
+      "label": "Dil Desteği",
+      "kind": "group",
+      "type": "feature",
+      "parentId": "root",
+      "metadata": {
+        "description": "Tree-sitter tabanlı çok dilli kod ayrıştırma — TypeScript, Python, Go, Rust, Java normalizer'ları ve merkezi kayıt sistemi",
+        "fileCount": 7
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-53e403f99bb9ad8b",
+      "label": "normalizer.ts",
+      "kind": "file",
+      "type": "TypeScript/TSX normalizer — import, export ve sembol çıkarma",
+      "parentId": "g-aa2d05706fff4cd5",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/typescript/normalizer.ts",
+        "fileId": "53e403f99bb9ad8b",
+        "language": "typescript",
+        "role": "TypeScript/TSX normalizer — import, export ve sembol çıkarma",
+        "importance": "core"
+      },
+      "confidence": 0.93
+    },
+    {
+      "id": "f-23744172e5f5fa22",
+      "label": "normalizer.ts",
+      "kind": "file",
+      "type": "Python normalizer — import, dekoratör, docstring ve sembol çıkarma",
+      "parentId": "g-aa2d05706fff4cd5",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/python/normalizer.ts",
+        "fileId": "23744172e5f5fa22",
+        "language": "typescript",
+        "role": "Python normalizer — import, dekoratör, docstring ve sembol çıkarma",
+        "importance": "supporting"
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "f-5bb2bd36f52477e1",
+      "label": "normalizer.ts",
+      "kind": "file",
+      "type": "Go normalizer — import ve sembol çıkarma",
+      "parentId": "g-aa2d05706fff4cd5",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/go/normalizer.ts",
+        "fileId": "5bb2bd36f52477e1",
+        "language": "typescript",
+        "role": "Go normalizer — import ve sembol çıkarma",
+        "importance": "supporting"
+      },
+      "confidence": 0.88
+    },
+    {
+      "id": "f-6521643ae5a54621",
+      "label": "normalizer.ts",
+      "kind": "file",
+      "type": "Rust normalizer — use bildirimleri ve sembol çıkarma",
+      "parentId": "g-aa2d05706fff4cd5",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/rust/normalizer.ts",
+        "fileId": "6521643ae5a54621",
+        "language": "typescript",
+        "role": "Rust normalizer — use bildirimleri ve sembol çıkarma",
+        "importance": "supporting"
+      },
+      "confidence": 0.88
+    },
+    {
+      "id": "f-31630c0b361a7975",
+      "label": "normalizer.ts",
+      "kind": "file",
+      "type": "Java normalizer — import, erişim belirleyici ve sembol çıkarma",
+      "parentId": "g-aa2d05706fff4cd5",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/java/normalizer.ts",
+        "fileId": "31630c0b361a7975",
+        "language": "typescript",
+        "role": "Java normalizer — import, erişim belirleyici ve sembol çıkarma",
+        "importance": "supporting"
+      },
+      "confidence": 0.88
+    },
+    {
+      "id": "f-71804e438b80b7b3",
+      "label": "registry.ts",
+      "kind": "file",
+      "type": "Dil kaydı — tüm normalizer'ları merkezi olarak yönetir",
+      "parentId": "g-aa2d05706fff4cd5",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/registry.ts",
+        "fileId": "71804e438b80b7b3",
+        "language": "typescript",
+        "role": "Dil kaydı — tüm normalizer'ları merkezi olarak yönetir",
+        "importance": "core"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "f-e5546eb9121295ca",
+      "label": "types.ts",
+      "kind": "file",
+      "type": "Dil tipleri — SymbolKind, ImportInfo, ExportInfo gibi ortak arayüzler",
+      "parentId": "g-aa2d05706fff4cd5",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/languages/types.ts",
+        "fileId": "e5546eb9121295ca",
+        "language": "typescript",
+        "role": "Dil tipleri — SymbolKind, ImportInfo, ExportInfo gibi ortak arayüzler",
+        "importance": "core"
+      },
+      "confidence": 0.93
+    },
+    {
+      "id": "g-fb3fc7337ec6f148",
+      "label": "Altyapı",
+      "kind": "group",
+      "type": "infrastructure",
+      "parentId": "root",
+      "metadata": {
+        "description": "Paylaşılan kütüphaneler ve yardımcılar — artifact depolama, hash üretimi, Tree-sitter WASM yükleme",
+        "fileCount": 5
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-7877a9d693b32198",
+      "label": "artifact-store.ts",
+      "kind": "file",
+      "type": "Artifact store — pipeline adımları arası veri aktarımı için bellek deposu",
+      "parentId": "g-fb3fc7337ec6f148",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/lib/artifact-store.ts",
+        "fileId": "7877a9d693b32198",
+        "language": "typescript",
+        "role": "Artifact store — pipeline adımları arası veri aktarımı için bellek deposu",
+        "importance": "core"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "f-458b5c84e88c4ab9",
+      "label": "hashing.ts",
+      "kind": "file",
+      "type": "Hash yardımcıları — SHA-256 tabanlı fileId ve symbolId üretimi",
+      "parentId": "g-fb3fc7337ec6f148",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/lib/hashing.ts",
+        "fileId": "458b5c84e88c4ab9",
+        "language": "typescript",
+        "role": "Hash yardımcıları — SHA-256 tabanlı fileId ve symbolId üretimi",
+        "importance": "supporting"
+      },
+      "confidence": 0.88
+    },
+    {
+      "id": "f-abfe138c6245bc14",
+      "label": "tree-sitter-loader.ts",
+      "kind": "file",
+      "type": "Tree-sitter yükleyici — WASM grammar dosyalarını yükler ve parser oluşturur",
+      "parentId": "g-fb3fc7337ec6f148",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/lib/tree-sitter-loader.ts",
+        "fileId": "abfe138c6245bc14",
+        "language": "typescript",
+        "role": "Tree-sitter yükleyici — WASM grammar dosyalarını yükler ve parser oluşturur",
+        "importance": "core"
+      },
+      "confidence": 0.92
+    },
+    {
+      "id": "f-b4e6a59725650275",
+      "label": "types.ts",
+      "kind": "file",
+      "type": "Ortak tipler — ToolResult, jsonResult, errorResult yardımcı fonksiyonlar",
+      "parentId": "g-fb3fc7337ec6f148",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/types.ts",
+        "fileId": "b4e6a59725650275",
+        "language": "typescript",
+        "role": "Ortak tipler — ToolResult, jsonResult, errorResult yardımcı fonksiyonlar",
+        "importance": "supporting"
+      },
+      "confidence": 0.9
+    },
+    {
+      "id": "f-7c82f899da6733ab",
+      "label": "copy-grammars.js",
+      "kind": "file",
+      "type": "Build betiği — Tree-sitter grammar WASM dosyalarını kopyalar",
+      "parentId": "g-fb3fc7337ec6f148",
+      "metadata": {
+        "canonicalPath": "mcp-server/scripts/copy-grammars.js",
+        "fileId": "7c82f899da6733ab",
+        "language": "javascript",
+        "role": "Build betiği — Tree-sitter grammar WASM dosyalarını kopyalar",
         "importance": "peripheral"
       },
       "confidence": 0.8
+    },
+    {
+      "id": "g-d01a3fecc0fdb5d7",
+      "label": "Sunucu Çekirdeği",
+      "kind": "group",
+      "type": "layer",
+      "parentId": "root",
+      "metadata": {
+        "description": "MCP sunucu başlatma noktası — tool tanımları, Zod şemaları ve stdio transport yapılandırması",
+        "fileCount": 1
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-e8f7ed71d93ad489",
+      "label": "index.ts",
+      "kind": "file",
+      "type": "MCP sunucusunun ana giriş noktası — tüm tool handler'ları kayıt eder ve stdio transport başlatır",
+      "parentId": "g-d01a3fecc0fdb5d7",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/index.ts",
+        "fileId": "e8f7ed71d93ad489",
+        "language": "typescript",
+        "role": "MCP sunucusunun ana giriş noktası — tüm tool handler'ları kayıt eder ve stdio transport başlatır",
+        "importance": "core"
+      },
+      "confidence": 0.98
     }
   ],
   "edges": [
     {
-      "id": "e-dac7315ea8aa3e44",
+      "id": "e-a5e000f784470455",
       "source": "f-e8f7ed71d93ad489",
-      "target": "f-7877a9d693b32198",
+      "target": "f-d638059166d4e8e2",
       "rels": [
         "imports"
       ],
-      "label": "Creates singleton ArtifactStore, passes to all tool handlers",
+      "label": "handleBuild handler'ını kayıt eder",
       "metadata": {
-        "annotation": "Creates singleton ArtifactStore, passes to all tool handlers"
-      }
-    },
-    {
-      "id": "e-cecb2ed4f671db16",
-      "source": "f-e8f7ed71d93ad489",
-      "target": "f-d69795c6d50526f3",
-      "rels": [
-        "imports"
-      ],
-      "label": "Registers scan tool handler",
-      "metadata": {
-        "annotation": "Registers scan tool handler"
-      }
-    },
-    {
-      "id": "e-c558f0a195a53c50",
-      "source": "f-e8f7ed71d93ad489",
-      "target": "f-319363d430e9d9bc",
-      "rels": [
-        "imports"
-      ],
-      "label": "Registers resolve tool handler",
-      "metadata": {
-        "annotation": "Registers resolve tool handler"
-      }
-    },
-    {
-      "id": "e-8423af472a4e4d97",
-      "source": "f-e8f7ed71d93ad489",
-      "target": "f-f23002dfc341cd9c",
-      "rels": [
-        "imports"
-      ],
-      "label": "Registers context tool handler",
-      "metadata": {
-        "annotation": "Registers context tool handler"
+        "annotation": "handleBuild handler'ını kayıt eder"
       }
     },
     {
@@ -540,45 +462,21 @@
       "rels": [
         "imports"
       ],
-      "label": "Registers parse tool handler",
+      "label": "handleParse handler'ını kayıt eder",
       "metadata": {
-        "annotation": "Registers parse tool handler"
+        "annotation": "handleParse handler'ını kayıt eder"
       }
     },
     {
-      "id": "e-507328bc87e1d8bb",
+      "id": "e-8423af472a4e4d97",
       "source": "f-e8f7ed71d93ad489",
-      "target": "f-b49504342ab0a9f7",
+      "target": "f-f23002dfc341cd9c",
       "rels": [
         "imports"
       ],
-      "label": "Registers sample tool handler",
+      "label": "handleContext handler'ını kayıt eder",
       "metadata": {
-        "annotation": "Registers sample tool handler"
-      }
-    },
-    {
-      "id": "e-a5e000f784470455",
-      "source": "f-e8f7ed71d93ad489",
-      "target": "f-d638059166d4e8e2",
-      "rels": [
-        "imports"
-      ],
-      "label": "Registers build tool handler",
-      "metadata": {
-        "annotation": "Registers build tool handler"
-      }
-    },
-    {
-      "id": "e-b6d35144cdef6b1a",
-      "source": "f-e8f7ed71d93ad489",
-      "target": "f-37a1e3ff7092236b",
-      "rels": [
-        "imports"
-      ],
-      "label": "Registers validate tool handler",
-      "metadata": {
-        "annotation": "Registers validate tool handler"
+        "annotation": "handleContext handler'ını kayıt eder"
       }
     },
     {
@@ -588,57 +486,69 @@
       "rels": [
         "imports"
       ],
-      "label": "Registers publish tool handler",
+      "label": "handlePublish handler'ını kayıt eder",
       "metadata": {
-        "annotation": "Registers publish tool handler"
+        "annotation": "handlePublish handler'ını kayıt eder"
       }
     },
     {
-      "id": "e-9a663df341e5825a",
-      "source": "f-d638059166d4e8e2",
+      "id": "e-c558f0a195a53c50",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-319363d430e9d9bc",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleResolve handler'ını kayıt eder",
+      "metadata": {
+        "annotation": "handleResolve handler'ını kayıt eder"
+      }
+    },
+    {
+      "id": "e-507328bc87e1d8bb",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-b49504342ab0a9f7",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleSample handler'ını kayıt eder",
+      "metadata": {
+        "annotation": "handleSample handler'ını kayıt eder"
+      }
+    },
+    {
+      "id": "e-cecb2ed4f671db16",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-d69795c6d50526f3",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleScan handler'ını kayıt eder",
+      "metadata": {
+        "annotation": "handleScan handler'ını kayıt eder"
+      }
+    },
+    {
+      "id": "e-b6d35144cdef6b1a",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-37a1e3ff7092236b",
+      "rels": [
+        "imports"
+      ],
+      "label": "handleValidate handler'ını kayıt eder",
+      "metadata": {
+        "annotation": "handleValidate handler'ını kayıt eder"
+      }
+    },
+    {
+      "id": "e-dac7315ea8aa3e44",
+      "source": "f-e8f7ed71d93ad489",
       "target": "f-7877a9d693b32198",
       "rels": [
         "imports"
       ],
-      "label": "Reads ParseResult artifact, stores MindMapJSON artifact",
+      "label": "ArtifactStore örneği oluşturur",
       "metadata": {
-        "annotation": "Reads ParseResult artifact, stores MindMapJSON artifact"
-      }
-    },
-    {
-      "id": "e-e801ce549a5cd854",
-      "source": "f-d638059166d4e8e2",
-      "target": "f-458b5c84e88c4ab9",
-      "rels": [
-        "imports"
-      ],
-      "label": "Uses sha256Short for node ID generation",
-      "metadata": {
-        "annotation": "Uses sha256Short for node ID generation"
-      }
-    },
-    {
-      "id": "e-8370d32d72978b43",
-      "source": "f-d638059166d4e8e2",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "Uses ToolResult, jsonResult, errorResult",
-      "metadata": {
-        "annotation": "Uses ToolResult, jsonResult, errorResult"
-      }
-    },
-    {
-      "id": "e-f4973c60cd24f2e0",
-      "source": "f-049ee2f92b096d77",
-      "target": "f-7877a9d693b32198",
-      "rels": [
-        "imports"
-      ],
-      "label": "Stores ParseResult artifact for downstream tools",
-      "metadata": {
-        "annotation": "Stores ParseResult artifact for downstream tools"
+        "annotation": "ArtifactStore örneği oluşturur"
       }
     },
     {
@@ -648,21 +558,9 @@
       "rels": [
         "imports"
       ],
-      "label": "Creates Tree-sitter parsers for each language",
+      "label": "Tree-sitter parser oluşturmak için kullanır",
       "metadata": {
-        "annotation": "Creates Tree-sitter parsers for each language"
-      }
-    },
-    {
-      "id": "e-0a12d8d374bd9ea1",
-      "source": "f-049ee2f92b096d77",
-      "target": "f-458b5c84e88c4ab9",
-      "rels": [
-        "imports"
-      ],
-      "label": "Uses symbolId for deterministic symbol IDs",
-      "metadata": {
-        "annotation": "Uses symbolId for deterministic symbol IDs"
+        "annotation": "Tree-sitter parser oluşturmak için kullanır"
       }
     },
     {
@@ -672,33 +570,57 @@
       "rels": [
         "imports"
       ],
-      "label": "Gets language-specific normalizer from registry",
+      "label": "Dile uygun normalizer'ı seçer",
       "metadata": {
-        "annotation": "Gets language-specific normalizer from registry"
+        "annotation": "Dile uygun normalizer'ı seçer"
       }
     },
     {
-      "id": "e-06b736d31f544281",
+      "id": "e-f4973c60cd24f2e0",
       "source": "f-049ee2f92b096d77",
-      "target": "f-e5546eb9121295ca",
+      "target": "f-7877a9d693b32198",
       "rels": [
         "imports"
       ],
-      "label": "Uses NormalizerResult, SymbolInfo types",
+      "label": "Parse sonuçlarını artifact store'a kaydeder",
       "metadata": {
-        "annotation": "Uses NormalizerResult, SymbolInfo types"
+        "annotation": "Parse sonuçlarını artifact store'a kaydeder"
       }
     },
     {
-      "id": "e-effad4345849e4af",
+      "id": "e-0a12d8d374bd9ea1",
       "source": "f-049ee2f92b096d77",
-      "target": "f-b4e6a59725650275",
+      "target": "f-458b5c84e88c4ab9",
       "rels": [
         "imports"
       ],
-      "label": "Uses ToolResult types",
+      "label": "symbolId üretimi için hash fonksiyonları kullanır",
       "metadata": {
-        "annotation": "Uses ToolResult types"
+        "annotation": "symbolId üretimi için hash fonksiyonları kullanır"
+      }
+    },
+    {
+      "id": "e-9a663df341e5825a",
+      "source": "f-d638059166d4e8e2",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "imports"
+      ],
+      "label": "Parse artifact'lerini okur, MindMapJSON yazar",
+      "metadata": {
+        "annotation": "Parse artifact'lerini okur, MindMapJSON yazar"
+      }
+    },
+    {
+      "id": "e-e801ce549a5cd854",
+      "source": "f-d638059166d4e8e2",
+      "target": "f-458b5c84e88c4ab9",
+      "rels": [
+        "imports"
+      ],
+      "label": "Node ID üretimi için sha256Short kullanır",
+      "metadata": {
+        "annotation": "Node ID üretimi için sha256Short kullanır"
       }
     },
     {
@@ -708,21 +630,9 @@
       "rels": [
         "imports"
       ],
-      "label": "Reads MindMapJSON artifact for final output",
+      "label": "Tüm artifact'leri okuyup paketler",
       "metadata": {
-        "annotation": "Reads MindMapJSON artifact for final output"
-      }
-    },
-    {
-      "id": "e-751ea6d336073461",
-      "source": "f-0f11ab0fd4984fda",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "Uses ToolResult, errorResult",
-      "metadata": {
-        "annotation": "Uses ToolResult, errorResult"
+        "annotation": "Tüm artifact'leri okuyup paketler"
       }
     },
     {
@@ -732,93 +642,9 @@
       "rels": [
         "imports"
       ],
-      "label": "Reads MindMapJSON artifact for validation",
+      "label": "MindMapJSON artifact'ini okuyup doğrular",
       "metadata": {
-        "annotation": "Reads MindMapJSON artifact for validation"
-      }
-    },
-    {
-      "id": "e-ccfba87f166add39",
-      "source": "f-37a1e3ff7092236b",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "Uses ToolResult types",
-      "metadata": {
-        "annotation": "Uses ToolResult types"
-      }
-    },
-    {
-      "id": "e-b36771438d7f995b",
-      "source": "f-f23002dfc341cd9c",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "Uses ToolResult types",
-      "metadata": {
-        "annotation": "Uses ToolResult types"
-      }
-    },
-    {
-      "id": "e-eff549d9054d24ef",
-      "source": "f-319363d430e9d9bc",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "Uses ToolResult types",
-      "metadata": {
-        "annotation": "Uses ToolResult types"
-      }
-    },
-    {
-      "id": "e-0074322e080c0ae8",
-      "source": "f-319363d430e9d9bc",
-      "target": "f-458b5c84e88c4ab9",
-      "rels": [
-        "imports"
-      ],
-      "label": "Uses fileId and sha256 for content hashing",
-      "metadata": {
-        "annotation": "Uses fileId and sha256 for content hashing"
-      }
-    },
-    {
-      "id": "e-1350ed3dc87753b7",
-      "source": "f-b49504342ab0a9f7",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "Uses ToolResult types",
-      "metadata": {
-        "annotation": "Uses ToolResult types"
-      }
-    },
-    {
-      "id": "e-b54c3b6f0de15d2d",
-      "source": "f-d69795c6d50526f3",
-      "target": "f-b4e6a59725650275",
-      "rels": [
-        "imports"
-      ],
-      "label": "Uses ToolResult types",
-      "metadata": {
-        "annotation": "Uses ToolResult types"
-      }
-    },
-    {
-      "id": "e-8ebf3b9ae057d02a",
-      "source": "f-71804e438b80b7b3",
-      "target": "f-e5546eb9121295ca",
-      "rels": [
-        "imports"
-      ],
-      "label": "Imports LanguageNormalizer interface",
-      "metadata": {
-        "annotation": "Imports LanguageNormalizer interface"
+        "annotation": "MindMapJSON artifact'ini okuyup doğrular"
       }
     },
     {
@@ -828,9 +654,9 @@
       "rels": [
         "imports"
       ],
-      "label": "Registers TypeScript normalizer",
+      "label": "TypeScript normalizer'ı kayıt eder",
       "metadata": {
-        "annotation": "Registers TypeScript normalizer"
+        "annotation": "TypeScript normalizer'ı kayıt eder"
       }
     },
     {
@@ -840,9 +666,9 @@
       "rels": [
         "imports"
       ],
-      "label": "Registers Python normalizer",
+      "label": "Python normalizer'ı kayıt eder",
       "metadata": {
-        "annotation": "Registers Python normalizer"
+        "annotation": "Python normalizer'ı kayıt eder"
       }
     },
     {
@@ -852,9 +678,9 @@
       "rels": [
         "imports"
       ],
-      "label": "Registers Go normalizer",
+      "label": "Go normalizer'ı kayıt eder",
       "metadata": {
-        "annotation": "Registers Go normalizer"
+        "annotation": "Go normalizer'ı kayıt eder"
       }
     },
     {
@@ -864,9 +690,9 @@
       "rels": [
         "imports"
       ],
-      "label": "Registers Rust normalizer",
+      "label": "Rust normalizer'ı kayıt eder",
       "metadata": {
-        "annotation": "Registers Rust normalizer"
+        "annotation": "Rust normalizer'ı kayıt eder"
       }
     },
     {
@@ -876,9 +702,21 @@
       "rels": [
         "imports"
       ],
-      "label": "Registers Java normalizer",
+      "label": "Java normalizer'ı kayıt eder",
       "metadata": {
-        "annotation": "Registers Java normalizer"
+        "annotation": "Java normalizer'ı kayıt eder"
+      }
+    },
+    {
+      "id": "e-8ebf3b9ae057d02a",
+      "source": "f-71804e438b80b7b3",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "LanguageNormalizer arayüzünü kullanır",
+      "metadata": {
+        "annotation": "LanguageNormalizer arayüzünü kullanır"
       }
     },
     {
@@ -886,11 +724,11 @@
       "source": "f-53e403f99bb9ad8b",
       "target": "f-e5546eb9121295ca",
       "rels": [
-        "implements"
+        "imports"
       ],
-      "label": "Implements LanguageNormalizer interface for TypeScript",
+      "label": "Ortak tip tanımlarını import eder",
       "metadata": {
-        "annotation": "Implements LanguageNormalizer interface for TypeScript"
+        "annotation": "Ortak tip tanımlarını import eder"
       }
     },
     {
@@ -898,11 +736,11 @@
       "source": "f-23744172e5f5fa22",
       "target": "f-e5546eb9121295ca",
       "rels": [
-        "implements"
+        "imports"
       ],
-      "label": "Implements LanguageNormalizer interface for Python",
+      "label": "Ortak tip tanımlarını import eder",
       "metadata": {
-        "annotation": "Implements LanguageNormalizer interface for Python"
+        "annotation": "Ortak tip tanımlarını import eder"
       }
     },
     {
@@ -910,11 +748,11 @@
       "source": "f-5bb2bd36f52477e1",
       "target": "f-e5546eb9121295ca",
       "rels": [
-        "implements"
+        "imports"
       ],
-      "label": "Implements LanguageNormalizer interface for Go",
+      "label": "Ortak tip tanımlarını import eder",
       "metadata": {
-        "annotation": "Implements LanguageNormalizer interface for Go"
+        "annotation": "Ortak tip tanımlarını import eder"
       }
     },
     {
@@ -922,11 +760,11 @@
       "source": "f-6521643ae5a54621",
       "target": "f-e5546eb9121295ca",
       "rels": [
-        "implements"
+        "imports"
       ],
-      "label": "Implements LanguageNormalizer interface for Rust",
+      "label": "Ortak tip tanımlarını import eder",
       "metadata": {
-        "annotation": "Implements LanguageNormalizer interface for Rust"
+        "annotation": "Ortak tip tanımlarını import eder"
       }
     },
     {
@@ -934,11 +772,131 @@
       "source": "f-31630c0b361a7975",
       "target": "f-e5546eb9121295ca",
       "rels": [
-        "implements"
+        "imports"
       ],
-      "label": "Implements LanguageNormalizer interface for Java",
+      "label": "Ortak tip tanımlarını import eder",
       "metadata": {
-        "annotation": "Implements LanguageNormalizer interface for Java"
+        "annotation": "Ortak tip tanımlarını import eder"
+      }
+    },
+    {
+      "id": "e-8370d32d72978b43",
+      "source": "f-d638059166d4e8e2",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult tiplerini kullanır",
+      "metadata": {
+        "annotation": "ToolResult tiplerini kullanır"
+      }
+    },
+    {
+      "id": "e-effad4345849e4af",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult tiplerini kullanır",
+      "metadata": {
+        "annotation": "ToolResult tiplerini kullanır"
+      }
+    },
+    {
+      "id": "e-b36771438d7f995b",
+      "source": "f-f23002dfc341cd9c",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult tiplerini kullanır",
+      "metadata": {
+        "annotation": "ToolResult tiplerini kullanır"
+      }
+    },
+    {
+      "id": "e-751ea6d336073461",
+      "source": "f-0f11ab0fd4984fda",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult tiplerini kullanır",
+      "metadata": {
+        "annotation": "ToolResult tiplerini kullanır"
+      }
+    },
+    {
+      "id": "e-eff549d9054d24ef",
+      "source": "f-319363d430e9d9bc",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult tiplerini kullanır",
+      "metadata": {
+        "annotation": "ToolResult tiplerini kullanır"
+      }
+    },
+    {
+      "id": "e-0074322e080c0ae8",
+      "source": "f-319363d430e9d9bc",
+      "target": "f-458b5c84e88c4ab9",
+      "rels": [
+        "imports"
+      ],
+      "label": "fileId ve sha256 üretimi için kullanır",
+      "metadata": {
+        "annotation": "fileId ve sha256 üretimi için kullanır"
+      }
+    },
+    {
+      "id": "e-1350ed3dc87753b7",
+      "source": "f-b49504342ab0a9f7",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult tiplerini kullanır",
+      "metadata": {
+        "annotation": "ToolResult tiplerini kullanır"
+      }
+    },
+    {
+      "id": "e-b54c3b6f0de15d2d",
+      "source": "f-d69795c6d50526f3",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult tiplerini kullanır",
+      "metadata": {
+        "annotation": "ToolResult tiplerini kullanır"
+      }
+    },
+    {
+      "id": "e-ccfba87f166add39",
+      "source": "f-37a1e3ff7092236b",
+      "target": "f-b4e6a59725650275",
+      "rels": [
+        "imports"
+      ],
+      "label": "ToolResult tiplerini kullanır",
+      "metadata": {
+        "annotation": "ToolResult tiplerini kullanır"
+      }
+    },
+    {
+      "id": "e-06b736d31f544281",
+      "source": "f-049ee2f92b096d77",
+      "target": "f-e5546eb9121295ca",
+      "rels": [
+        "imports"
+      ],
+      "label": "NormalizerResult ve SymbolInfo tiplerini kullanır",
+      "metadata": {
+        "annotation": "NormalizerResult ve SymbolInfo tiplerini kullanır"
       }
     },
     {
@@ -946,11 +904,11 @@
       "source": "f-50c2a84e8f4a513b",
       "target": "f-959f9cada636604d",
       "rels": [
-        "uses"
+        "renders"
       ],
-      "label": "Queries DOM elements defined in HTML",
+      "label": "HTML'deki DOM elementlerini kullanır",
       "metadata": {
-        "annotation": "Queries DOM elements defined in HTML"
+        "annotation": "HTML'deki DOM elementlerini kullanır"
       }
     },
     {
@@ -958,23 +916,11 @@
       "source": "f-50c2a84e8f4a513b",
       "target": "f-679a43711b4b0365",
       "rels": [
-        "uses"
+        "styles"
       ],
-      "label": "Relies on CSS classes for node styling",
+      "label": "CSS sınıflarını oluşturulan elementlere uygular",
       "metadata": {
-        "annotation": "Relies on CSS classes for node styling"
-      }
-    },
-    {
-      "id": "e-3ce58e38b1e71f47",
-      "source": "f-7c82f899da6733ab",
-      "target": "f-abfe138c6245bc14",
-      "rels": [
-        "supports"
-      ],
-      "label": "Copies WASM grammars that tree-sitter-loader consumes at runtime",
-      "metadata": {
-        "annotation": "Copies WASM grammars that tree-sitter-loader consumes at runtime"
+        "annotation": "CSS sınıflarını oluşturulan elementlere uygular"
       }
     }
   ]

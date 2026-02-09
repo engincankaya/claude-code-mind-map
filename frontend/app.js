@@ -6,8 +6,8 @@
 const CONFIG = {
   dataUrl: '../mindmap-output.json',
 
-  nodeWidths:  { root: 280, group: 190, file: 210 },
-  nodeHeights: { root: 66,  group: 42,  file: 40  },
+  nodeWidths:  { root: 280, group: 260, file: 210 },
+  nodeHeights: { root: 66,  group: 62,  file: 40  },
 
   detailCard: { width: 320, padding: 16 },
 
@@ -211,6 +211,98 @@ function countGroups() {
 }
 
 // ============================================================
+// Explain Group — compute aggregate analysis for a group node
+// ============================================================
+function computeExplainGroup(node) {
+  const edges = rawData.edges;
+
+  // All child file IDs in this group
+  const childIds = new Set(node._allChildren.map(c => c.id));
+
+  // Files with their metadata
+  const files = node._allChildren.map(c => ({
+    id: c.id,
+    label: c.displayLabel || c.label,
+    role: c.type || c.metadata?.role || 'Unknown',
+    importance: c.metadata?.importance || 'unknown',
+    language: c.metadata?.language || '',
+  }));
+
+  // Internal edges (both source and target within this group)
+  const internalEdges = edges.filter(e => childIds.has(e.source) && childIds.has(e.target));
+
+  // External outgoing (source in group, target outside)
+  const externalOutgoing = edges
+    .filter(e => childIds.has(e.source) && !childIds.has(e.target))
+    .map(e => ({
+      source: nodeMap.get(e.source),
+      target: nodeMap.get(e.target),
+      rels: e.rels,
+      label: e.label || e.metadata?.annotation || e.rels.join(', '),
+    }))
+    .filter(e => e.target);
+
+  // External incoming (target in group, source outside)
+  const externalIncoming = edges
+    .filter(e => childIds.has(e.target) && !childIds.has(e.source))
+    .map(e => ({
+      source: nodeMap.get(e.source),
+      target: nodeMap.get(e.target),
+      rels: e.rels,
+      label: e.label || e.metadata?.annotation || e.rels.join(', '),
+    }))
+    .filter(e => e.source);
+
+  // Group external outgoing by target group
+  const outgoingGroupMap = new Map();
+  externalOutgoing.forEach(e => {
+    const targetGroup = e.target.parentId ? nodeMap.get(e.target.parentId) : null;
+    const groupLabel = targetGroup ? targetGroup.label : 'Root';
+    if (!outgoingGroupMap.has(groupLabel)) outgoingGroupMap.set(groupLabel, []);
+    const name = e.target.displayLabel || e.target.label;
+    if (!outgoingGroupMap.get(groupLabel).find(f => f.name === name)) {
+      outgoingGroupMap.get(groupLabel).push({ name, rels: e.rels });
+    }
+  });
+
+  // Group external incoming by source group
+  const incomingGroupMap = new Map();
+  externalIncoming.forEach(e => {
+    const sourceGroup = e.source.parentId ? nodeMap.get(e.source.parentId) : null;
+    const groupLabel = sourceGroup ? sourceGroup.label : 'Root';
+    if (!incomingGroupMap.has(groupLabel)) incomingGroupMap.set(groupLabel, []);
+    const name = e.source.displayLabel || e.source.label;
+    if (!incomingGroupMap.get(groupLabel).find(f => f.name === name)) {
+      incomingGroupMap.get(groupLabel).push({ name, rels: e.rels });
+    }
+  });
+
+  // Summary
+  const coreCount = files.filter(f => f.importance === 'core').length;
+  const crossGroupCount = new Set([...outgoingGroupMap.keys(), ...incomingGroupMap.keys()]).size;
+  const extEdgeCount = externalOutgoing.length + externalIncoming.length;
+
+  let summary = '';
+  if (crossGroupCount === 0) {
+    summary = `Self-contained group with ${files.length} files and ${internalEdges.length} internal connections. No external dependencies.`;
+  } else {
+    summary = `${files.length} files (${coreCount} core). Connected to ${crossGroupCount} other group${crossGroupCount > 1 ? 's' : ''} via ${extEdgeCount} external edge${extEdgeCount > 1 ? 's' : ''}.`;
+  }
+
+  return {
+    description: node.metadata?.description || '',
+    type: node.type || '',
+    files,
+    internalEdgeCount: internalEdges.length,
+    externalOutgoing,
+    externalIncoming,
+    outgoingGroupMap,
+    incomingGroupMap,
+    summary,
+  };
+}
+
+// ============================================================
 // Detail Card — helpers
 // ============================================================
 function addSection(card, title, contentHtml) {
@@ -249,6 +341,11 @@ function drawDetailEdge(node, cardX, cardY, card) {
 // ============================================================
 function showDetailCard(node) {
   closeDetailCard();
+
+  if (node.kind === 'group') {
+    showGroupDetailCard(node);
+    return;
+  }
 
   const explain = computeExplain(node);
   const card = document.createElement('div');
@@ -364,6 +461,128 @@ function showDetailCard(node) {
   // Highlight the source node
   const sourceEl = nodesLayer.querySelector(`[data-node-id="${node.id}"]`);
   if (sourceEl) sourceEl.classList.add('node--selected');
+}
+
+// ============================================================
+// Group Detail Card — render group-level analysis
+// ============================================================
+function showGroupDetailCard(node) {
+  const explain = computeExplainGroup(node);
+  const card = document.createElement('div');
+  card.className = 'detail-card detail-card--group';
+
+  const cardX = node.x + node.width + 60;
+  const cardY = node.y - 20;
+  card.style.left = cardX + 'px';
+  card.style.top  = cardY + 'px';
+  card.style.width = '360px';
+
+  // ── Header ──
+  const header = document.createElement('div');
+  header.className = 'detail-header';
+  header.innerHTML = `
+    <div style="min-width:0">
+      <div class="detail-title">${esc(node.displayLabel)}</div>
+      ${explain.description ? `<div class="detail-path">${esc(explain.description)}</div>` : ''}
+    </div>
+    <button class="detail-close">&times;</button>
+  `;
+  card.appendChild(header);
+  header.querySelector('.detail-close').addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeDetailCard();
+  });
+
+  // ── 1. Type ──
+  if (explain.type) {
+    addSection(card, 'Type', `<div class="detail-role-text">${esc(explain.type)}</div>`);
+  }
+
+  // ── 2. Overview badges ──
+  const coreCount = explain.files.filter(f => f.importance === 'core').length;
+  const supportingCount = explain.files.filter(f => f.importance === 'supporting').length;
+  const peripheralCount = explain.files.filter(f => f.importance === 'peripheral').length;
+  const statsHtml = `
+    <div class="detail-meta-row">
+      <span class="detail-badge detail-badge--group">${explain.files.length} files</span>
+      <span class="detail-badge detail-badge--group">${explain.internalEdgeCount} internal edges</span>
+      ${coreCount ? `<span class="detail-badge detail-badge--core">${coreCount} core</span>` : ''}
+      ${supportingCount ? `<span class="detail-badge detail-badge--supporting">${supportingCount} supporting</span>` : ''}
+      ${peripheralCount ? `<span class="detail-badge detail-badge--peripheral">${peripheralCount} peripheral</span>` : ''}
+    </div>`;
+  addSection(card, 'Overview', statsHtml);
+
+  // ── 3. Files list (two-row layout) ──
+  if (explain.files.length) {
+    const filesHtml = explain.files.map(f => {
+      const impClass = f.importance ? `detail-badge--${f.importance}` : '';
+      return `<div class="detail-file-item">
+        <div class="detail-file-top">
+          <span class="detail-edge-name" data-node-id="${f.id}">${esc(f.label)}</span>
+          <span class="detail-badge ${impClass}">${f.importance}</span>
+          ${f.language ? `<span class="detail-badge detail-badge--lang">${f.language}</span>` : ''}
+        </div>
+        <div class="detail-file-role">${esc(f.role)}</div>
+      </div>`;
+    }).join('');
+    addSection(card, `Files (${explain.files.length})`, `<div class="detail-file-list">${filesHtml}</div>`);
+  }
+
+  // ── 4. Depends on ──
+  if (explain.outgoingGroupMap.size) {
+    let html = '';
+    explain.outgoingGroupMap.forEach((files, groupLabel) => {
+      const fileNames = files.map(f => esc(f.name)).join(', ');
+      html += `<div class="detail-cross-item">
+        <div class="detail-cross-route">${esc(node.label)} \u2192 ${esc(groupLabel)}</div>
+        <div class="detail-cross-files">${fileNames}</div>
+      </div>`;
+    });
+    addSection(card, `Depends on (${explain.outgoingGroupMap.size} groups)`, `<div class="detail-cross-list">${html}</div>`);
+  }
+
+  // ── 5. Depended on by ──
+  if (explain.incomingGroupMap.size) {
+    let html = '';
+    explain.incomingGroupMap.forEach((files, groupLabel) => {
+      const fileNames = files.map(f => esc(f.name)).join(', ');
+      html += `<div class="detail-cross-item">
+        <div class="detail-cross-route">${esc(groupLabel)} \u2192 ${esc(node.label)}</div>
+        <div class="detail-cross-files">${fileNames}</div>
+      </div>`;
+    });
+    addSection(card, `Depended on by (${explain.incomingGroupMap.size} groups)`, `<div class="detail-cross-list">${html}</div>`);
+  }
+
+  // ── 6. Summary ──
+  const summaryEl = document.createElement('div');
+  summaryEl.className = 'detail-summary';
+  summaryEl.innerHTML = explain.summary;
+  card.appendChild(summaryEl);
+
+  nodesLayer.appendChild(card);
+  activeDetailCard = card;
+
+  // Wire up click handlers on file names
+  card.querySelectorAll('.detail-edge-name').forEach(el => {
+    el.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      const targetId = el.dataset.nodeId;
+      if (node.collapsed) {
+        toggleCollapse(node);
+        setTimeout(() => highlightNode(targetId), 100);
+      } else {
+        highlightNode(targetId);
+      }
+    });
+  });
+
+  // Draw connecting edge from node to card
+  drawDetailEdge(node, cardX, cardY, card);
+
+  // Highlight the source node
+  const srcEl = nodesLayer.querySelector(`[data-node-id="${node.id}"]`);
+  if (srcEl) srcEl.classList.add('node--selected');
 }
 
 function closeDetailCard() {
@@ -495,34 +714,66 @@ function renderNodes(node) {
   el.style.animationDelay = (node.depth * CONFIG.animStagger) + 's';
   el.dataset.nodeId = node.id;
 
-  // Label text
-  const labelSpan = document.createElement('span');
-  labelSpan.className = 'node-label';
-  labelSpan.textContent = node.displayLabel;
-  el.appendChild(labelSpan);
-
-  // Collapse/expand toggle for group nodes
+  // Group nodes: two-line layout (label + description)
   if (node.kind === 'group') {
+    const content = document.createElement('div');
+    content.className = 'node-group-content';
+
+    // Top row: label + toggle + badge
+    const topRow = document.createElement('div');
+    topRow.className = 'node-group-top';
+
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'node-label';
+    labelSpan.textContent = node.displayLabel;
+    topRow.appendChild(labelSpan);
+
     const toggle = document.createElement('span');
     toggle.className = 'collapse-toggle' + (node.collapsed ? '' : ' collapse-toggle--open');
     toggle.textContent = '\u25B6';
     toggle.title = node.collapsed
       ? `Expand (${node._allChildren.length} files)`
       : 'Collapse';
-    el.appendChild(toggle);
+    topRow.appendChild(toggle);
 
     if (node.collapsed) {
       const badge = document.createElement('span');
       badge.className = 'file-count-badge';
       badge.textContent = node._allChildren.length;
-      el.appendChild(badge);
+      topRow.appendChild(badge);
     }
 
-    el.addEventListener('click', (e) => {
+    content.appendChild(topRow);
+
+    // Bottom row: description
+    const desc = node.metadata?.description;
+    if (desc) {
+      const descSpan = document.createElement('div');
+      descSpan.className = 'node-group-desc';
+      descSpan.textContent = desc;
+      content.appendChild(descSpan);
+    }
+
+    el.appendChild(content);
+
+    // Chevron: collapse/expand
+    toggle.addEventListener('click', (e) => {
       e.stopPropagation();
       toggleCollapse(node);
     });
+
+    // Body: show group detail card
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showDetailCard(node);
+    });
     el.classList.add('node--clickable');
+  } else {
+    // Non-group nodes: simple label
+    const labelSpan = document.createElement('span');
+    labelSpan.className = 'node-label';
+    labelSpan.textContent = node.displayLabel;
+    el.appendChild(labelSpan);
   }
 
   // File nodes: click to show detail card
@@ -596,14 +847,16 @@ function showTooltip(node, x, y) {
     html += `<div class="tooltip-path">${esc(node.metadata.canonicalPath)}</div>`;
   if (node.type && node.kind !== 'root')
     html += `<div class="tooltip-type">${esc(node.type)}</div>`;
+  if (node.metadata?.description)
+    html += `<div class="tooltip-desc">${esc(node.metadata.description)}</div>`;
 
   const parts = [];
   if (node.metadata?.importance) parts.push(node.metadata.importance);
   if (node.metadata?.language)   parts.push(node.metadata.language);
   if (node.confidence != null)   parts.push(`confidence ${(node.confidence * 100).toFixed(0)}%`);
-  if (node.collapsed && node._allChildren.length)
-    parts.push(`${node._allChildren.length} files (click to expand)`);
-  if (node.kind === 'file')
+  if (node.kind === 'group' && node._allChildren.length)
+    parts.push(`${node._allChildren.length} files`);
+  if (node.kind === 'file' || node.kind === 'group')
     parts.push('click for details');
   if (parts.length) html += `<div class="tooltip-meta">${parts.join(' \u00B7 ')}</div>`;
 

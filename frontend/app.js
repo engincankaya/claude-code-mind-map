@@ -7,7 +7,7 @@ const CONFIG = {
   dataUrl: '../mindmap-output.json',
 
   nodeWidths:  { root: 280, group: 260, file: 210 },
-  nodeHeights: { root: 66,  group: 62,  file: 40  },
+  nodeHeights: { root: 66,  group: 56,  file: 40  },
 
   detailCard: { width: 320, padding: 16 },
 
@@ -21,6 +21,8 @@ const CONFIG = {
   animStagger: 0.15,   // seconds per depth level
 
   zoom: { min: 0.15, max: 3, step: 0.08 },
+
+  groupPanel: { width: 380, gap: 60 },
 };
 
 // ---- DOM refs ----
@@ -30,9 +32,10 @@ const edgesSvg   = document.getElementById('edges-svg');
 const nodesLayer = document.getElementById('nodes-layer');
 const tooltip    = document.getElementById('tooltip');
 const statsEl    = document.getElementById('stats');
-const btnFit     = document.getElementById('btn-fit');
-const btnZoomIn  = document.getElementById('btn-zoom-in');
-const btnZoomOut = document.getElementById('btn-zoom-out');
+const btnFit      = document.getElementById('btn-fit');
+const btnZoomIn   = document.getElementById('btn-zoom-in');
+const btnZoomOut  = document.getElementById('btn-zoom-out');
+const btnOverview = document.getElementById('btn-overview');
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -44,6 +47,9 @@ let rawData = null;
 let nodeMap = new Map();        // id → tree node (for edge lookups)
 let activeDetailCard = null;    // currently open detail card
 let activeDetailEdge = null;    // SVG edge to detail card
+let activeGroupPanel = null;    // { node, element, edgePath }
+let activeGroupPanelNode = null; // group node with open panel
+let overviewPanel = null;        // project overview panel element
 
 // ============================================================
 // Data Loading
@@ -97,7 +103,8 @@ function buildTree(data) {
     node.depth = d;
     node.displayLabel = displayLabel(node);
     node._allChildren = [...node.children];
-    if (node.collapsed) {
+    // Groups never expand into tree children — files only appear in inline panel
+    if (node.kind === 'group') {
       node.children = [];
     }
     node._allChildren.forEach(c => walk(c, d + 1));
@@ -208,6 +215,189 @@ function countGroups() {
   let c = 0;
   rawData.nodes.forEach(n => { if (n.kind === 'group') c++; });
   return c;
+}
+
+// ============================================================
+// Project Overview — aggregate stats from the mind map data
+// ============================================================
+function computeProjectOverview() {
+  const nodes = rawData.nodes;
+  const edges = rawData.edges;
+  const root = nodes.find(n => n.kind === 'root');
+  const groups = nodes.filter(n => n.kind === 'group');
+  const files = nodes.filter(n => n.kind === 'file');
+
+  // Language distribution
+  const langCount = {};
+  files.forEach(f => {
+    const lang = f.metadata?.language || 'unknown';
+    langCount[lang] = (langCount[lang] || 0) + 1;
+  });
+  const languages = Object.entries(langCount)
+    .sort((a, b) => b[1] - a[1])
+    .map(([lang, count]) => ({ lang, count, pct: Math.round(count / files.length * 100) }));
+
+  // Importance distribution
+  const impCount = { core: 0, supporting: 0, peripheral: 0 };
+  files.forEach(f => {
+    const imp = f.metadata?.importance || 'peripheral';
+    if (impCount[imp] !== undefined) impCount[imp]++;
+  });
+
+  // Cross-group edge count
+  const fileToGroup = {};
+  files.forEach(f => { fileToGroup[f.id] = f.parentId; });
+  let crossGroupEdges = 0;
+  edges.forEach(e => {
+    if (fileToGroup[e.source] && fileToGroup[e.target] &&
+        fileToGroup[e.source] !== fileToGroup[e.target]) {
+      crossGroupEdges++;
+    }
+  });
+
+  // Group summaries
+  const groupSummaries = groups.map(g => ({
+    label: g.label,
+    type: g.type,
+    description: g.metadata?.description || '',
+    fileCount: g.metadata?.fileCount || 0,
+  }));
+
+  return {
+    name: root?.label || 'Project',
+    pattern: root?.metadata?.pattern || root?.label || '',
+    generatedAt: rawData.meta?.generatedAt,
+    nodeCount: nodes.length,
+    edgeCount: edges.length,
+    groupCount: groups.length,
+    fileCount: files.length,
+    languages,
+    importance: impCount,
+    crossGroupEdges,
+    groupSummaries,
+  };
+}
+
+function toggleOverview() {
+  if (overviewPanel) {
+    overviewPanel.remove();
+    overviewPanel = null;
+    btnOverview.classList.remove('toolbar-btn--active');
+    return;
+  }
+  renderProjectOverview();
+}
+
+function renderProjectOverview() {
+  const ov = computeProjectOverview();
+  const panel = document.createElement('div');
+  panel.className = 'overview-panel';
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'overview-header';
+  header.innerHTML = `
+    <div class="overview-title-row">
+      <span class="overview-title">${esc(ov.name)}</span>
+      <button class="overview-close" title="Close">&times;</button>
+    </div>
+    ${ov.pattern !== ov.name ? `<div class="overview-pattern">${esc(ov.pattern)}</div>` : ''}
+  `;
+  panel.appendChild(header);
+
+  // Stats grid
+  const stats = document.createElement('div');
+  stats.className = 'overview-stats';
+  stats.innerHTML = `
+    <div class="overview-stat">
+      <span class="overview-stat__value">${ov.groupCount}</span>
+      <span class="overview-stat__label">Groups</span>
+    </div>
+    <div class="overview-stat">
+      <span class="overview-stat__value">${ov.fileCount}</span>
+      <span class="overview-stat__label">Files</span>
+    </div>
+    <div class="overview-stat">
+      <span class="overview-stat__value">${ov.edgeCount}</span>
+      <span class="overview-stat__label">Edges</span>
+    </div>
+    <div class="overview-stat">
+      <span class="overview-stat__value">${ov.crossGroupEdges}</span>
+      <span class="overview-stat__label">Cross-group</span>
+    </div>
+  `;
+  panel.appendChild(stats);
+
+  // Languages
+  const langSection = document.createElement('div');
+  langSection.className = 'overview-section';
+  langSection.innerHTML = `<div class="overview-section__title">Languages</div>`;
+  const langBars = document.createElement('div');
+  langBars.className = 'overview-lang-bars';
+  ov.languages.forEach(l => {
+    langBars.innerHTML += `
+      <div class="overview-lang-row">
+        <span class="overview-lang-name">${esc(l.lang)}</span>
+        <div class="overview-lang-bar-bg">
+          <div class="overview-lang-bar-fill" style="width: ${l.pct}%"></div>
+        </div>
+        <span class="overview-lang-count">${l.count}</span>
+      </div>
+    `;
+  });
+  langSection.appendChild(langBars);
+  panel.appendChild(langSection);
+
+  // Importance
+  const impSection = document.createElement('div');
+  impSection.className = 'overview-section';
+  impSection.innerHTML = `<div class="overview-section__title">Importance</div>`;
+  const impRow = document.createElement('div');
+  impRow.className = 'overview-importance';
+  impRow.innerHTML = `
+    <span class="detail-badge detail-badge--core">${ov.importance.core} core</span>
+    <span class="detail-badge detail-badge--supporting">${ov.importance.supporting} supporting</span>
+    <span class="detail-badge detail-badge--peripheral">${ov.importance.peripheral} peripheral</span>
+  `;
+  impSection.appendChild(impRow);
+  panel.appendChild(impSection);
+
+  // Groups
+  const grpSection = document.createElement('div');
+  grpSection.className = 'overview-section';
+  grpSection.innerHTML = `<div class="overview-section__title">Architecture Groups</div>`;
+  const grpList = document.createElement('div');
+  grpList.className = 'overview-groups';
+  ov.groupSummaries.forEach(g => {
+    grpList.innerHTML += `
+      <div class="overview-group-item">
+        <div class="overview-group-top">
+          <span class="overview-group-name">${esc(g.label)}</span>
+          <span class="node-group-badge node-group-badge--${g.type}">${g.type}</span>
+          <span class="overview-group-files">${g.fileCount} files</span>
+        </div>
+        <div class="overview-group-desc">${esc(g.description)}</div>
+      </div>
+    `;
+  });
+  grpSection.appendChild(grpList);
+  panel.appendChild(grpSection);
+
+  // Generated at
+  if (ov.generatedAt) {
+    const d = new Date(ov.generatedAt);
+    const footer = document.createElement('div');
+    footer.className = 'overview-footer';
+    footer.textContent = `Generated ${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+    panel.appendChild(footer);
+  }
+
+  document.getElementById('app').appendChild(panel);
+  overviewPanel = panel;
+  btnOverview.classList.add('toolbar-btn--active');
+
+  // Close button
+  panel.querySelector('.overview-close').addEventListener('click', toggleOverview);
 }
 
 // ============================================================
@@ -343,7 +533,7 @@ function showDetailCard(node) {
   closeDetailCard();
 
   if (node.kind === 'group') {
-    showGroupDetailCard(node);
+    toggleGroupPanel(node);
     return;
   }
 
@@ -463,128 +653,6 @@ function showDetailCard(node) {
   if (sourceEl) sourceEl.classList.add('node--selected');
 }
 
-// ============================================================
-// Group Detail Card — render group-level analysis
-// ============================================================
-function showGroupDetailCard(node) {
-  const explain = computeExplainGroup(node);
-  const card = document.createElement('div');
-  card.className = 'detail-card detail-card--group';
-
-  const cardX = node.x + node.width + 60;
-  const cardY = node.y - 20;
-  card.style.left = cardX + 'px';
-  card.style.top  = cardY + 'px';
-  card.style.width = '360px';
-
-  // ── Header ──
-  const header = document.createElement('div');
-  header.className = 'detail-header';
-  header.innerHTML = `
-    <div style="min-width:0">
-      <div class="detail-title">${esc(node.displayLabel)}</div>
-      ${explain.description ? `<div class="detail-path">${esc(explain.description)}</div>` : ''}
-    </div>
-    <button class="detail-close">&times;</button>
-  `;
-  card.appendChild(header);
-  header.querySelector('.detail-close').addEventListener('click', (e) => {
-    e.stopPropagation();
-    closeDetailCard();
-  });
-
-  // ── 1. Type ──
-  if (explain.type) {
-    addSection(card, 'Type', `<div class="detail-role-text">${esc(explain.type)}</div>`);
-  }
-
-  // ── 2. Overview badges ──
-  const coreCount = explain.files.filter(f => f.importance === 'core').length;
-  const supportingCount = explain.files.filter(f => f.importance === 'supporting').length;
-  const peripheralCount = explain.files.filter(f => f.importance === 'peripheral').length;
-  const statsHtml = `
-    <div class="detail-meta-row">
-      <span class="detail-badge detail-badge--group">${explain.files.length} files</span>
-      <span class="detail-badge detail-badge--group">${explain.internalEdgeCount} internal edges</span>
-      ${coreCount ? `<span class="detail-badge detail-badge--core">${coreCount} core</span>` : ''}
-      ${supportingCount ? `<span class="detail-badge detail-badge--supporting">${supportingCount} supporting</span>` : ''}
-      ${peripheralCount ? `<span class="detail-badge detail-badge--peripheral">${peripheralCount} peripheral</span>` : ''}
-    </div>`;
-  addSection(card, 'Overview', statsHtml);
-
-  // ── 3. Files list (two-row layout) ──
-  if (explain.files.length) {
-    const filesHtml = explain.files.map(f => {
-      const impClass = f.importance ? `detail-badge--${f.importance}` : '';
-      return `<div class="detail-file-item">
-        <div class="detail-file-top">
-          <span class="detail-edge-name" data-node-id="${f.id}">${esc(f.label)}</span>
-          <span class="detail-badge ${impClass}">${f.importance}</span>
-          ${f.language ? `<span class="detail-badge detail-badge--lang">${f.language}</span>` : ''}
-        </div>
-        <div class="detail-file-role">${esc(f.role)}</div>
-      </div>`;
-    }).join('');
-    addSection(card, `Files (${explain.files.length})`, `<div class="detail-file-list">${filesHtml}</div>`);
-  }
-
-  // ── 4. Depends on ──
-  if (explain.outgoingGroupMap.size) {
-    let html = '';
-    explain.outgoingGroupMap.forEach((files, groupLabel) => {
-      const fileNames = files.map(f => esc(f.name)).join(', ');
-      html += `<div class="detail-cross-item">
-        <div class="detail-cross-route">${esc(node.label)} \u2192 ${esc(groupLabel)}</div>
-        <div class="detail-cross-files">${fileNames}</div>
-      </div>`;
-    });
-    addSection(card, `Depends on (${explain.outgoingGroupMap.size} groups)`, `<div class="detail-cross-list">${html}</div>`);
-  }
-
-  // ── 5. Depended on by ──
-  if (explain.incomingGroupMap.size) {
-    let html = '';
-    explain.incomingGroupMap.forEach((files, groupLabel) => {
-      const fileNames = files.map(f => esc(f.name)).join(', ');
-      html += `<div class="detail-cross-item">
-        <div class="detail-cross-route">${esc(groupLabel)} \u2192 ${esc(node.label)}</div>
-        <div class="detail-cross-files">${fileNames}</div>
-      </div>`;
-    });
-    addSection(card, `Depended on by (${explain.incomingGroupMap.size} groups)`, `<div class="detail-cross-list">${html}</div>`);
-  }
-
-  // ── 6. Summary ──
-  const summaryEl = document.createElement('div');
-  summaryEl.className = 'detail-summary';
-  summaryEl.innerHTML = explain.summary;
-  card.appendChild(summaryEl);
-
-  nodesLayer.appendChild(card);
-  activeDetailCard = card;
-
-  // Wire up click handlers on file names
-  card.querySelectorAll('.detail-edge-name').forEach(el => {
-    el.addEventListener('click', (ev) => {
-      ev.stopPropagation();
-      const targetId = el.dataset.nodeId;
-      if (node.collapsed) {
-        toggleCollapse(node);
-        setTimeout(() => highlightNode(targetId), 100);
-      } else {
-        highlightNode(targetId);
-      }
-    });
-  });
-
-  // Draw connecting edge from node to card
-  drawDetailEdge(node, cardX, cardY, card);
-
-  // Highlight the source node
-  const srcEl = nodesLayer.querySelector(`[data-node-id="${node.id}"]`);
-  if (srcEl) srcEl.classList.add('node--selected');
-}
-
 function closeDetailCard() {
   if (activeDetailCard) {
     activeDetailCard.remove();
@@ -594,6 +662,7 @@ function closeDetailCard() {
     activeDetailEdge.remove();
     activeDetailEdge = null;
   }
+  closeGroupPanel();
   // Remove all highlights
   nodesLayer.querySelectorAll('.node--selected').forEach(el => el.classList.remove('node--selected'));
   nodesLayer.querySelectorAll('.node--highlighted').forEach(el => el.classList.remove('node--highlighted'));
@@ -612,19 +681,183 @@ function highlightNode(nodeId) {
 }
 
 // ============================================================
-// Collapse / Expand
+// Group Inline Panel
 // ============================================================
-function toggleCollapse(node) {
-  if (!node._allChildren.length) return;
-  node.collapsed = !node.collapsed;
-  node.children = node.collapsed ? [] : [...node._allChildren];
+function closeGroupPanel() {
+  if (activeGroupPanel) {
+    if (activeGroupPanel.element) activeGroupPanel.element.remove();
+    if (activeGroupPanel.edgePath) activeGroupPanel.edgePath.remove();
+    activeGroupPanel = null;
+  }
+  activeGroupPanelNode = null;
+}
+
+function toggleGroupPanel(node) {
+  if (node.kind !== 'group' || !node._allChildren.length) return;
+  if (activeGroupPanelNode === node) {
+    closeGroupPanel();
+    relayout();
+    return;
+  }
+  closeGroupPanel();
   closeDetailCard();
+  activeGroupPanelNode = node;
   relayout();
+}
+
+function drawPanelEdge(node, panelX, panelY, panel) {
+  const sx = node.x + node.width;
+  const sy = node.y + node.height / 2;
+  const tx = panelX;
+  const panelHeight = panel.getBoundingClientRect().height / currentScale;
+  const ty = panelY + Math.min(panelHeight / 2, 30);
+  const mx = (sx + tx) / 2;
+
+  const path = document.createElementNS(SVG_NS, 'path');
+  path.setAttribute('d', `M ${sx} ${sy} C ${mx} ${sy}, ${mx} ${ty}, ${tx} ${ty}`);
+  path.setAttribute('class', 'edge-path edge-path--panel');
+  edgesSvg.appendChild(path);
+  return path;
+}
+
+function addPanelSection(panel, title, contentHtml) {
+  const section = document.createElement('div');
+  section.className = 'group-panel__section';
+  if (title) {
+    const label = document.createElement('div');
+    label.className = 'detail-section-label';
+    label.textContent = title;
+    section.appendChild(label);
+  }
+  const value = document.createElement('div');
+  value.className = 'detail-section-value';
+  value.innerHTML = contentHtml;
+  section.appendChild(value);
+  panel.appendChild(section);
+}
+
+function renderGroupPanel(node) {
+  const explain = computeExplainGroup(node);
+  const { width: panelWidth, gap: panelGap } = CONFIG.groupPanel;
+
+  const panelX = node.x + node.width + panelGap;
+  const panelY = node.y - 10;
+
+  const panel = document.createElement('div');
+  panel.className = 'group-panel';
+  panel.style.left = panelX + 'px';
+  panel.style.top  = panelY + 'px';
+  panel.style.width = panelWidth + 'px';
+
+  // ── Header ──
+  const header = document.createElement('div');
+  header.className = 'group-panel__header';
+  header.innerHTML = `
+    <div style="min-width:0">
+      <div class="group-panel__title">${esc(node.displayLabel)}</div>
+      ${explain.description ? `<div class="group-panel__desc">${esc(explain.description)}</div>` : ''}
+    </div>
+    <button class="group-panel__close">&times;</button>
+  `;
+  panel.appendChild(header);
+  header.querySelector('.group-panel__close').addEventListener('click', (e) => {
+    e.stopPropagation();
+    closeGroupPanel();
+    relayout();
+  });
+
+  // ── Type badge ──
+  if (node.type) {
+    const coreCount = explain.files.filter(f => f.importance === 'core').length;
+    const supportingCount = explain.files.filter(f => f.importance === 'supporting').length;
+    const peripheralCount = explain.files.filter(f => f.importance === 'peripheral').length;
+    const statsHtml = `
+      <div class="detail-meta-row">
+        <span class="detail-badge detail-badge--group">${explain.files.length} files</span>
+        <span class="detail-badge detail-badge--group">${explain.internalEdgeCount} internal edges</span>
+        ${coreCount ? `<span class="detail-badge detail-badge--core">${coreCount} core</span>` : ''}
+        ${supportingCount ? `<span class="detail-badge detail-badge--supporting">${supportingCount} supporting</span>` : ''}
+        ${peripheralCount ? `<span class="detail-badge detail-badge--peripheral">${peripheralCount} peripheral</span>` : ''}
+      </div>`;
+    addPanelSection(panel, 'Overview', statsHtml);
+  }
+
+  // ── Internal Communication ──
+  const edges = rawData.edges;
+  const childIds = new Set(node._allChildren.map(c => c.id));
+  const internalEdges = edges.filter(e => childIds.has(e.source) && childIds.has(e.target));
+
+  if (internalEdges.length > 0) {
+    const internalHtml = internalEdges.map(e => {
+      const src = nodeMap.get(e.source);
+      const tgt = nodeMap.get(e.target);
+      const srcName = src ? (src.displayLabel || src.label) : e.source;
+      const tgtName = tgt ? (tgt.displayLabel || tgt.label) : e.target;
+      const annotation = e.label || e.rels.join(', ');
+      return `<div class="group-panel__internal-edge">
+        <span class="group-panel__edge-src">${esc(srcName)}</span>
+        <span class="group-panel__edge-arrow">\u2192</span>
+        <span class="group-panel__edge-tgt">${esc(tgtName)}</span>
+        <span class="group-panel__edge-label">${esc(annotation)}</span>
+      </div>`;
+    }).join('');
+    addPanelSection(panel, `Internal Communication (${internalEdges.length})`, internalHtml);
+  }
+
+  // ── Files list ──
+  const filesHtml = explain.files.map(f => {
+    const impClass = f.importance ? `detail-badge--${f.importance}` : '';
+    return `<div class="group-panel__file" data-file-id="${f.id}">
+      <div class="group-panel__file-top">
+        <span class="group-panel__file-name" data-node-id="${f.id}">${esc(f.label)}</span>
+        <span class="detail-badge ${impClass}">${f.importance}</span>
+        ${f.language ? `<span class="detail-badge detail-badge--lang">${f.language}</span>` : ''}
+      </div>
+      <div class="group-panel__file-role">${esc(f.role)}</div>
+    </div>`;
+  }).join('');
+  addPanelSection(panel, `Files (${explain.files.length})`, `<div class="group-panel__file-list">${filesHtml}</div>`);
+
+  // ── Summary ──
+  const summaryEl = document.createElement('div');
+  summaryEl.className = 'detail-summary';
+  summaryEl.innerHTML = explain.summary;
+  panel.appendChild(summaryEl);
+
+  nodesLayer.appendChild(panel);
+
+  // Draw connecting edge (defer to next frame for accurate height)
+  requestAnimationFrame(() => {
+    if (activeGroupPanel && activeGroupPanel.element === panel) {
+      activeGroupPanel.edgePath = drawPanelEdge(node, panelX, panelY, panel);
+    }
+  });
+
+  activeGroupPanel = { node, element: panel, edgePath: null };
+
+  // Highlight source group node
+  const srcEl = nodesLayer.querySelector(`[data-node-id="${node.id}"]`);
+  if (srcEl) srcEl.classList.add('node--selected');
+
+  // File click → highlight row
+  panel.querySelectorAll('.group-panel__file').forEach(el => {
+    el.addEventListener('click', (ev) => {
+      ev.stopPropagation();
+      panel.querySelectorAll('.group-panel__file--active').forEach(a => a.classList.remove('group-panel__file--active'));
+      el.classList.add('group-panel__file--active');
+    });
+  });
 }
 
 function relayout() {
   nodesLayer.innerHTML = '';
   edgesSvg.innerHTML = '';
+
+  // Clear panel DOM refs (DOM was cleared)
+  if (activeGroupPanel) {
+    activeGroupPanel.element = null;
+    activeGroupPanel.edgePath = null;
+  }
 
   computeSubtreeHeight(rootNode);
   computeXPositions(rootNode);
@@ -638,6 +871,11 @@ function relayout() {
 
   renderNodes(rootNode);
   renderEdges(rootNode);
+
+  // Render group panel if one is open
+  if (activeGroupPanelNode) {
+    renderGroupPanel(activeGroupPanelNode);
+  }
 }
 
 // ============================================================
@@ -697,8 +935,10 @@ function computeBounds(root) {
     maxY = Math.max(maxY, n.y + n.height);
     n.children.forEach(walk);
   })(root);
-  // Extra space for potential detail cards on the right
-  return { width: maxX + CONFIG.padding + CONFIG.detailCard.width + 80, height: maxY + CONFIG.padding };
+  // Extra space for panel or detail cards on the right
+  const panelExtra = activeGroupPanelNode ? CONFIG.groupPanel.width + CONFIG.groupPanel.gap + 40 : 0;
+  const rightPad = Math.max(CONFIG.detailCard.width + 80, panelExtra);
+  return { width: maxX + CONFIG.padding + rightPad, height: maxY + CONFIG.padding };
 }
 
 // ============================================================
@@ -714,12 +954,12 @@ function renderNodes(node) {
   el.style.animationDelay = (node.depth * CONFIG.animStagger) + 's';
   el.dataset.nodeId = node.id;
 
-  // Group nodes: two-line layout (label + description)
+  // Group nodes: label + info badges
   if (node.kind === 'group') {
     const content = document.createElement('div');
     content.className = 'node-group-content';
 
-    // Top row: label + toggle + badge
+    // Top row: label + toggle
     const topRow = document.createElement('div');
     topRow.className = 'node-group-top';
 
@@ -728,44 +968,59 @@ function renderNodes(node) {
     labelSpan.textContent = node.displayLabel;
     topRow.appendChild(labelSpan);
 
+    const isOpen = activeGroupPanelNode === node;
     const toggle = document.createElement('span');
-    toggle.className = 'collapse-toggle' + (node.collapsed ? '' : ' collapse-toggle--open');
+    toggle.className = 'collapse-toggle' + (isOpen ? ' collapse-toggle--open' : '');
     toggle.textContent = '\u25B6';
-    toggle.title = node.collapsed
-      ? `Expand (${node._allChildren.length} files)`
-      : 'Collapse';
+    toggle.title = isOpen
+      ? 'Close panel'
+      : `Show details (${node._allChildren.length} files)`;
     topRow.appendChild(toggle);
-
-    if (node.collapsed) {
-      const badge = document.createElement('span');
-      badge.className = 'file-count-badge';
-      badge.textContent = node._allChildren.length;
-      topRow.appendChild(badge);
-    }
 
     content.appendChild(topRow);
 
-    // Bottom row: description
-    const desc = node.metadata?.description;
-    if (desc) {
-      const descSpan = document.createElement('div');
-      descSpan.className = 'node-group-desc';
-      descSpan.textContent = desc;
-      content.appendChild(descSpan);
+    // Bottom row: info badges
+    const infoRow = document.createElement('div');
+    infoRow.className = 'node-group-info';
+
+    // Type badge (layer / feature / infrastructure)
+    if (node.type) {
+      const typeBadge = document.createElement('span');
+      typeBadge.className = 'node-group-badge node-group-badge--' + node.type;
+      typeBadge.textContent = node.type;
+      infoRow.appendChild(typeBadge);
     }
 
+    // File count badge
+    const filesBadge = document.createElement('span');
+    filesBadge.className = 'node-group-badge node-group-badge--files';
+    filesBadge.textContent = node._allChildren.length + ' files';
+    infoRow.appendChild(filesBadge);
+
+    // Languages from children
+    const langs = new Set();
+    node._allChildren.forEach(c => {
+      if (c.metadata?.language) langs.add(c.metadata.language);
+    });
+    if (langs.size) {
+      const langBadge = document.createElement('span');
+      langBadge.className = 'node-group-badge node-group-badge--lang';
+      langBadge.textContent = [...langs].join(', ');
+      infoRow.appendChild(langBadge);
+    }
+
+    content.appendChild(infoRow);
     el.appendChild(content);
 
-    // Chevron: collapse/expand
+    // Chevron + body: toggle inline panel
     toggle.addEventListener('click', (e) => {
       e.stopPropagation();
-      toggleCollapse(node);
+      toggleGroupPanel(node);
     });
 
-    // Body: show group detail card
     el.addEventListener('click', (e) => {
       e.stopPropagation();
-      showDetailCard(node);
+      toggleGroupPanel(node);
     });
     el.classList.add('node--clickable');
   } else {
@@ -908,6 +1163,7 @@ function fitToScreen() {
 }
 
 btnFit.addEventListener('click', fitToScreen);
+btnOverview.addEventListener('click', toggleOverview);
 btnZoomIn.addEventListener('click',  () => { setZoom(currentScale + CONFIG.zoom.step); canvas.style.marginLeft = '0'; canvas.style.marginTop = '0'; });
 btnZoomOut.addEventListener('click', () => { setZoom(currentScale - CONFIG.zoom.step); canvas.style.marginLeft = '0'; canvas.style.marginTop = '0'; });
 
@@ -930,8 +1186,9 @@ viewport.addEventListener('click', (e) => {
 
 // Keyboard shortcuts
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeDetailCard();
+  if (e.key === 'Escape') { closeDetailCard(); if (overviewPanel) toggleOverview(); }
   if (e.key === 'f' || e.key === 'F') fitToScreen();
+  if (e.key === 'o' || e.key === 'O') toggleOverview();
   if (e.key === '=' || e.key === '+') { setZoom(currentScale + CONFIG.zoom.step); e.preventDefault(); }
   if (e.key === '-')                  { setZoom(currentScale - CONFIG.zoom.step); e.preventDefault(); }
 });

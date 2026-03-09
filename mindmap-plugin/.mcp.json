@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mindmap": {
+      "command": "node",
+      "args": ["/Users/engincankaya/Desktop/Calismalar/new/mind-map/mcp-server/dist/index.js"]
+    }
+  }
+}

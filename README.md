@@ -2,7 +2,7 @@
 
 Architecture-aware mind map generator for code repositories. A Claude Code plugin that combines Tree-sitter parsing with LLM intelligence to produce meaningful, interactive codebase visualizations.
 
-> **Tools extract facts. The LLM understands meaning.**
+<img width="1512" height="783" alt="mind-map" src="https://github.com/user-attachments/assets/91f5c112-eb24-4a24-8731-1f2c34bf935b" />
 
 ## Overview
 
@@ -26,6 +26,7 @@ This project is a monorepo consisting of:
 │             MCP Tool Server                  │
 │                                              │
 │  scan → resolve → context → parse            │
+
 │  sample → build → validate → publish         │
 │                                              │
 │  Zero LLM logic. Pure data in, data out.     │

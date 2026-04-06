@@ -1,16 +1,57 @@
 # Mind Map Generator
 
-Architecture-aware mind map generator for code repositories. A Claude Code plugin that combines Tree-sitter parsing with LLM intelligence to produce meaningful, interactive codebase visualizations.
+Architecture-aware mind map generator for code repositories.
+
+A Claude Code plugin that combines **deterministic code analysis (Tree-sitter + MCP)** with **LLM reasoning** to build a structured, interactive representation of your codebase.
 
 <img width="1512" height="783" alt="mind-map" src="https://github.com/user-attachments/assets/91f5c112-eb24-4a24-8731-1f2c34bf935b" />
 
+---
+
+## Why This Exists
+
+Most tools analyze code statically.
+
+This project goes further:
+
+* Turn your codebase into a **structured architecture graph**
+* Keep it understandable at **file, module, and system level**
+* Use it as a foundation for **LLM-powered development workflows**
+
+> This is not just a visualization tool —
+> it’s the foundation for **architecture-aware coding systems**.
+
+---
+
 ## Overview
 
-This project is a monorepo consisting of:
+This project is a **monorepo** with three core parts:
 
-- **MCP Server** (TypeScript) — 8-stage deterministic pipeline that scans, parses, and builds mind map graphs
-- **Frontend** (HTML/CSS/JS) — Interactive browser-based visualization with dark theme, tree layout, detail cards, and zoom/pan controls
-- **Claude Code Integration** — Agents, commands, and skills for seamless Claude Code workflow
+* **MCP Server (TypeScript)**
+  Deterministic pipeline that extracts structure from the codebase
+
+* **Frontend**
+  Interactive visualization layer for exploring the graph
+
+* **Claude Code Integration**
+  Agents and commands that orchestrate the system
+
+---
+
+## Core Principle
+
+> **Tools extract facts. The LLM understands meaning.**
+
+* MCP tools → deterministic, reproducible outputs
+* LLM → interprets structure and builds architectural understanding
+
+This separation ensures:
+
+* Reliability
+* Token efficiency
+* High-quality reasoning
+
+---
 
 ## Architecture
 
@@ -18,7 +59,7 @@ This project is a monorepo consisting of:
 ┌──────────────────────────────────────────────┐
 │           Claude Code (LLM Agent)            │
 │  Orchestrates phases, interprets data,       │
-│  makes architectural judgments                │
+│  makes architectural decisions               │
 └────────────┬─────────────────┬───────────────┘
              │ calls tools     │ receives results
              ▼                 ▼
@@ -26,137 +67,186 @@ This project is a monorepo consisting of:
 │             MCP Tool Server                  │
 │                                              │
 │  scan → resolve → context → parse            │
-
 │  sample → build → validate → publish         │
 │                                              │
 │  Zero LLM logic. Pure data in, data out.     │
 │                                              │
 │  ┌────────────────────────────────────────┐  │
 │  │     Artifact Store (In-Memory)         │  │
-│  │  Stores pipeline results by ID,        │  │
-│  │  ~75-87% token savings                 │  │
+│  │  Stores pipeline results by ID         │  │
+│  │  ~75–87% token savings                │  │
 │  └────────────────────────────────────────┘  │
 └──────────────────────────────────────────────┘
 ```
 
+---
+
 ## MCP Tools (8-Stage Pipeline)
 
-| Tool | Purpose |
-|------|---------|
-| `mindmap.scan` | List repository files with configurable ignore patterns |
-| `mindmap.resolve` | Canonicalize paths, produce stable file IDs and content hashes |
-| `mindmap.context` | Extract project metadata (README, package managers, folder structure) |
-| `mindmap.parse` | Parse source code via Tree-sitter at 3 depth levels (summary/standard/detailed) |
-| `mindmap.sample` | Read code snippets by line range for LLM interpretation |
-| `mindmap.build` | Construct mind map graph from LLM's architecture plan |
-| `mindmap.validate` | Check graph integrity (orphan nodes, broken edges, cycles) |
-| `mindmap.publish` | Bundle artifacts, emit structured output, write to disk |
+| Tool               | Purpose                           |
+| ------------------ | --------------------------------- |
+| `mindmap.scan`     | List repository files             |
+| `mindmap.resolve`  | Generate stable file IDs & hashes |
+| `mindmap.context`  | Extract project metadata          |
+| `mindmap.parse`    | AST parsing via Tree-sitter       |
+| `mindmap.sample`   | Retrieve code snippets            |
+| `mindmap.build`    | Construct graph                   |
+| `mindmap.validate` | Validate structure                |
+| `mindmap.publish`  | Output final artifact             |
+
+---
 
 ## Language Support
 
-Multi-language parsing via Tree-sitter (web-tree-sitter 0.24):
+Powered by Tree-sitter:
 
-| Language | Status |
-|----------|--------|
-| TypeScript / JavaScript / TSX / JSX | Tier 1 |
-| Python | Tier 1 |
-| Go | Tier 1 |
-| Rust | Tier 1 |
-| Java | Tier 1 |
+* TypeScript / JavaScript / TSX / JSX
+* Python
+* Go
+* Rust
+* Java
 
-Each language has a dedicated normalizer that extracts imports, exports, and symbols into a unified format.
+All languages are normalized into a **unified structure model**.
 
-## Prerequisites
-
-- Node.js >= 20.0.0
-- Claude Code CLI
-
-## Installation
-
-```bash
-# Clone the repository
-git clone <repo-url>
-cd mind-map
-
-# Install MCP server dependencies
-cd mcp-server
-npm install
-
-# Build
-npm run build
-```
+---
 
 ## Usage
 
-### With Claude Code
-
-The project registers itself as an MCP server via [.mcp.json](.mcp.json). Once built, Claude Code automatically discovers the tools.
+### Generate a Mind Map
 
 ```bash
-# Generate a mind map for any repository
 /mindmap /path/to/your/project
 ```
 
-### Available Claude Code Commands
+---
 
-| Command | Description |
-|---------|-------------|
-| `/mindmap` | Generate an architecture-aware mind map |
-| `/explain` | Explain the architectural role of a file or component |
-| `/impact` | Analyze the impact of changing a file or component |
+### Available Commands
+
+| Command    | Description                 |
+| ---------- | --------------------------- |
+| `/mindmap` | Generate architecture graph |
+| `/explain` | Explain a file/component    |
+| `/impact`  | Analyze change impact       |
+
+---
 
 ### Available Agents
 
-| Agent | Description |
-|-------|-------------|
-| `mindmap-agent` | Orchestrates the full mind map generation pipeline |
-| `architect-agent` | Architecture-aware coding assistant using the mind map knowledge graph |
-| `impact-agent` | Analyzes ripple effects of code changes via dependency tracing |
-| `onboard-agent` | Interactive project onboarding guide for new developers |
+| Agent             | Description                  |
+| ----------------- | ---------------------------- |
+| `mindmap-agent`   | Runs full pipeline           |
+| `architect-agent` | Architecture-aware assistant |
+| `impact-agent`    | Dependency analysis          |
+| `onboard-agent`   | Project onboarding           |
 
-### Frontend Visualization
+---
 
-Open [frontend/index.html](frontend/index.html) in a browser with a generated `mindmap-output.json` file. The frontend provides:
+## Frontend Visualization
 
-- Interactive tree layout with collapsible group nodes
-- Detail cards showing file roles, dependencies, and importance
-- Zoom/pan controls and keyboard shortcuts
-- Dark theme inspired by NotebookLM
-- Project overview panel with statistics
+Open:
 
+```
+frontend/index.html
+```
+
+Features:
+
+* Interactive tree layout
+* Collapsible nodes
+* Dependency graph
+* Zoom / pan
+* Detail panels
+* Dark theme
+
+---
+
+## Output Format
+
+Structured graph (MindMapJSON):
+
+* **Nodes**
+
+  * root, group, file, symbol
+  * metadata: role, importance, confidence
+
+* **Edges**
+
+  * dependencies (imports, calls, structure)
+
+* **Meta**
+
+  * timestamps, versions, stats
+
+---
+
+## Tech Stack
+
+TypeScript — MCP SDK — Tree-sitter — Zod — Vanilla JS
+
+---
+
+## Future Vision
+
+### Incremental Mind Map (Git-Aware)
+
+The system will evolve into a **continuously updated architecture graph**:
+
+* On every commit:
+
+  * Only affected nodes are updated
+  * Dependencies are recalculated incrementally
+* The graph always reflects the **latest state of the codebase**
+* The repository becomes a **living documentation system**
+
+---
+
+### Node-Centric LLM Context Engine
+
+This enables a new workflow:
+
+1. Select a node (file / module / symbol)
+2. Request a change (“update this logic”)
+3. System gathers:
+
+   * Related nodes
+   * Dependencies
+   * Relevant files
+   * Architectural context
+
+This context is passed to an LLM, enabling:
+
+* Context-aware code generation
+* Strong consistency across the system
+* Minimal token usage
+* Safer refactoring
+
+---
+
+### Why This Matters
+
+This transforms the system into:
+
+* A **real-time architecture memory layer**
+* A **context engine for LLM coding**
+* A bridge between:
+
+  * deterministic code understanding (MCP + Tree-sitter)
+  * semantic reasoning (LLMs)
+
+---
 
 ## Development
 
 ```bash
 cd mcp-server
 
-# Watch mode
+npm install
 npm run dev
-
-# Run tests
 npm test
-
-# Type check
 npm run lint
 ```
 
-## Output Format
-
-The generated mind map is a JSON graph (MindMapJSON) containing:
-
-- **Nodes**: root, group, file, and symbol nodes with metadata (role, importance, language, confidence)
-- **Edges**: dependency relationships (imports, renders, styles) with annotations
-- **Meta**: generation timestamp, node/edge counts, tool versions
-
-See [mindmap-output.json](mindmap-output.json) for a complete example.
-
-## Tech Stack
-
-- **MCP SDK** — `@modelcontextprotocol/sdk` for tool registration and stdio transport
-- **Tree-sitter** — `web-tree-sitter` for multi-language AST parsing
-- **Zod** — Input schema validation
-- **TypeScript** — MCP server implementation
-- **Vanilla JS** — Frontend visualization (no framework dependency)
+---
 
 ## License
 

@@ -1,3 +1,5 @@
+//midmap-agent çalıştırılmalı
+
 Generate an architecture-aware mind map for a code repository.
 
 Use the mindmap MCP tools to orchestrate the full pipeline:

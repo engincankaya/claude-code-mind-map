@@ -10,6 +10,7 @@ import { handleSample } from "./tools/sample.js";
 import { handleBuild } from "./tools/build.js";
 import { handleValidate } from "./tools/validate.js";
 import { handlePublish } from "./tools/publish.js";
+import { handleOverview } from "./tools/overview.js";
 
 const artifactStore = new ArtifactStore();
 
@@ -237,6 +238,34 @@ server.registerTool(
     },
   },
   async (args) => handlePublish(args, artifactStore),
+);
+
+// ─── Tool 9: mindmap.overview ──────────────────────────────────
+server.registerTool(
+  "mindmap.overview",
+  {
+    title: "Mind Map Overview",
+    description:
+      "Read a previously generated mind map JSON from disk and return " +
+      "an LLM-friendly project summary at 3 depth levels. " +
+      "Use this to understand a project's architecture without reading the full graph.",
+    inputSchema: {
+      depth: z
+        .enum(["minimal", "standard", "detailed"])
+        .optional()
+        .default("standard")
+        .describe(
+          "minimal: architecture + group names (~200 tokens). " +
+          "standard: + core files, descriptions, key relationships (~800 tokens). " +
+          "detailed: + all files, all edges, confidence scores (~2000 tokens).",
+        ),
+      focus: z
+        .string()
+        .optional()
+        .describe("Filter to a specific group by name (e.g. 'API Layer')"),
+    },
+  },
+  async (args) => handleOverview(args),
 );
 
 // ─── Start Server ───────────────────────────────────────────────

@@ -50,6 +50,7 @@ This project is a monorepo consisting of:
 | `mindmap.build` | Construct mind map graph from LLM's architecture plan |
 | `mindmap.validate` | Check graph integrity (orphan nodes, broken edges, cycles) |
 | `mindmap.publish` | Bundle artifacts, emit structured output, write to disk |
+| `mindmap.overview` | Read a mind map JSON from disk and return an LLM-friendly project summary (minimal/standard/detailed) |
 
 ## Language Support
 

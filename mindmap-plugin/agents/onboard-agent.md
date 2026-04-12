@@ -2,7 +2,8 @@
 name: onboard-agent
 description: Interactive project onboarding guide that walks new developers through the codebase architecture using the mind map knowledge graph
 tools:
-  - mcp__mindmap__sample
+  - mcp__mindmap__mindmap_inspect
+  - mcp__mindmap__mindmap_overview
   - Read
   - Glob
   - Grep
@@ -31,9 +32,9 @@ You are the **Onboard Agent** — an interactive guide that helps new developers
 ### Step 3: Core Groups Deep Dive (2 minutes)
 For each group, in dependency order:
 - What it does (group description)
-- Key files and their roles (node type field)
+- Key files first, using file descriptions when present and role labels otherwise
 - How it connects to other groups (cross-group edges)
-- Use `mindmap.sample` to show key code snippets if helpful
+- Use `mindmap.inspect` with `mode="sample"` to show key code snippets if helpful
 
 ### Step 4: Patterns & Conventions (1 minute)
 - Naming patterns observed across files

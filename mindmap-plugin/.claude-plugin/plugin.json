@@ -5,5 +5,8 @@
   "author": {
     "name": "Engincan Kaya"
   },
+  "homepage": "https://github.com/engincankaya/mind-map",
+  "repository": "https://github.com/engincankaya/mind-map",
+  "license": "MIT",
   "keywords": ["architecture", "mindmap", "tree-sitter", "codebase", "visualization"]
 }

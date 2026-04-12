@@ -76,6 +76,10 @@ function filesByImportance(
   return files.filter((f) => f.metadata.importance === importance);
 }
 
+function highlightedFiles(files: MindMapNode[]): MindMapNode[] {
+  return files.filter((f) => f.metadata.isHighlighted === true);
+}
+
 // ─── Depth: minimal ─────────────────────────────────────────────
 
 function buildMinimal(mindmap: MindMapJSON, focus?: string) {
@@ -122,21 +126,25 @@ function buildStandard(mindmap: MindMapJSON, focus?: string) {
 
   const groupResults = filteredGroups.map((g) => {
     const groupFiles = allFiles.filter((f) => f.parentId === g.id);
-    const core = filesByImportance(groupFiles, "core");
-    const supporting = filesByImportance(groupFiles, "supporting");
+    const keyFiles = highlightedFiles(groupFiles);
+    const otherFiles = groupFiles.filter((f) => f.metadata.isHighlighted !== true);
 
     return {
       name: g.label,
       kind: g.type,
       description: (g.metadata.description as string) ?? undefined,
       fileCount: groupFiles.length,
-      coreFiles: core.map((f) => ({
+      keyFiles: keyFiles.map((f) => ({
         path: (f.metadata.canonicalPath as string) ?? f.label,
         role: (f.metadata.role as string) ?? f.type,
+        description: (f.metadata.description as string) ?? undefined,
+        importance: (f.metadata.importance as string) ?? "unknown",
       })),
-      supportingFiles: supporting.map(
-        (f) => (f.metadata.canonicalPath as string) ?? f.label,
-      ),
+      otherFiles: otherFiles.map((f) => ({
+        path: (f.metadata.canonicalPath as string) ?? f.label,
+        role: (f.metadata.role as string) ?? f.type,
+        importance: (f.metadata.importance as string) ?? "unknown",
+      })),
     };
   });
 
@@ -198,7 +206,9 @@ function buildDetailed(mindmap: MindMapJSON, focus?: string) {
       files: groupFiles.map((f) => ({
         path: (f.metadata.canonicalPath as string) ?? f.label,
         role: (f.metadata.role as string) ?? f.type,
+        description: (f.metadata.description as string) ?? undefined,
         importance: (f.metadata.importance as string) ?? "unknown",
+        isHighlighted: f.metadata.isHighlighted === true,
         confidence: f.confidence,
       })),
     };

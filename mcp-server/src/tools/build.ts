@@ -10,12 +10,14 @@ interface ArchitecturePlan {
     role: string;
     confidence: number;
     importance?: "core" | "supporting" | "peripheral";
+    description?: string;
   }>;
   groups: Array<{
     label: string;
     kind: "layer" | "domain" | "feature" | "infrastructure" | "other";
     fileIds: string[];
     description?: string;
+    highlightFileIds?: string[];
   }>;
   relationships?: Array<{
     sourceFileId: string;
@@ -101,13 +103,26 @@ export async function handleBuild(
       fileMap.set(f.fileId, f);
     }
 
-    const classMap = new Map<string, { role: string; confidence: number; importance: string }>();
+    const classMap = new Map<string, {
+      role: string;
+      confidence: number;
+      importance: string;
+      description?: string;
+    }>();
     for (const c of plan.fileClassifications) {
       classMap.set(c.fileId, {
         role: c.role,
         confidence: c.confidence,
         importance: c.importance ?? "supporting",
+        description: c.description,
       });
+    }
+
+    const highlightedFileIds = new Set<string>();
+    for (const group of plan.groups) {
+      for (const fileId of group.highlightFileIds ?? []) {
+        highlightedFileIds.add(fileId);
+      }
     }
 
     const nodes: MindMapNode[] = [];
@@ -136,6 +151,7 @@ export async function handleBuild(
         metadata: {
           description: group.description,
           fileCount: group.fileIds.length,
+          highlightFileCount: (group.highlightFileIds ?? []).length,
         },
         confidence: 1.0,
       });
@@ -159,6 +175,10 @@ export async function handleBuild(
             language: resolved.language,
             role: classification?.role,
             importance: classification?.importance,
+            isHighlighted: highlightedFileIds.has(fileId),
+            description: highlightedFileIds.has(fileId)
+              ? classification?.description
+              : undefined,
           },
           confidence: classification?.confidence ?? 0.5,
         });

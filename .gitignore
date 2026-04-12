@@ -6,3 +6,5 @@ dist/
 coverage/
 .claude/settings.local.json
 docs
+# *.json
+# !.mcp.json

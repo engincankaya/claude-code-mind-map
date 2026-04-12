@@ -32,12 +32,17 @@ claude plugin install github:engincankaya/mind-map
 
 ## How It Works
 
-1. **Discovery** — Scans and resolves all source files
-2. **Extraction** — Parses code with Tree-sitter (TypeScript, Python, Go, Rust, Java)
-3. **Interpretation** — LLM classifies files, discovers patterns, creates semantic groups
-4. **Construction** — Builds a graph from the architecture plan
-5. **Validation** — Checks graph integrity
-6. **Publication** — Writes `mindmap-output.json` to the project root
+1. **Discovery** — `mindmap.discover` scans, resolves, and extracts repository context
+2. **Extraction** — `mindmap.inspect` parses code or samples snippets as needed
+3. **Interpretation** — LLM classifies files, discovers patterns, creates semantic groups, writes rich group descriptions, and highlights a few representative files per group
+4. **Generation** — `mindmap.generate` builds, validates, and writes `mindmap-output.json`
+
+## MCP Tools
+
+- `mindmap.discover` — scan + resolve + context in one call
+- `mindmap.inspect` — parse (summary/standard/detailed) or sample code snippets
+- `mindmap.generate` — build + validate + publish the final mind map
+- `mindmap.overview` — read an existing `mindmap-output.json` and return an LLM-friendly project summary
 
 ## Supported Languages
 
@@ -45,7 +50,7 @@ TypeScript/JavaScript, Python, Go, Rust, Java
 
 ## First Use
 
-On first use, Claude Code will ask you to approve the MCP tools (`mindmap.scan`, `mindmap.resolve`, etc.). Accept to enable the plugin's functionality.
+On first use, Claude Code will ask you to approve the MCP tools (`mindmap.discover`, `mindmap.inspect`, etc.). Accept to enable the plugin's functionality.
 
 ## License
 

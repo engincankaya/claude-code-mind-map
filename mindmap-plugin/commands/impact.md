@@ -1,5 +1,7 @@
 Analyze the impact of changing a file or component in this project.
 
+**Requires a mind map with edges.** If `mindmap-output.json` has an empty `edges` array (which happens when `/mindmap:generate` only parsed at `summary` depth), tell the user to regenerate with `detailed` depth across source files before running impact analysis.
+
 Read `mindmap-output.json` and find the node(s) matching: $ARGUMENTS
 
 Trace the dependency graph to show:

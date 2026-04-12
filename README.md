@@ -66,8 +66,9 @@ This separation ensures:
 ┌──────────────────────────────────────────────┐
 │             MCP Tool Server                  │
 │                                              │
-│  scan → resolve → context → parse            │
-│  sample → build → validate → publish         │
+│  discover → inspect → generate               │
+│  (scan/resolve/context and parse/sample      │
+│   are internal implementation details)       │
 │                                              │
 │  Zero LLM logic. Pure data in, data out.     │
 │                                              │
@@ -81,18 +82,13 @@ This separation ensures:
 
 ---
 
-## MCP Tools (8-Stage Pipeline)
+## MCP Tools
 
 | Tool | Purpose |
 |------|---------|
-| `mindmap.scan` | List repository files with configurable ignore patterns |
-| `mindmap.resolve` | Canonicalize paths, produce stable file IDs and content hashes |
-| `mindmap.context` | Extract project metadata (README, package managers, folder structure) |
-| `mindmap.parse` | Parse source code via Tree-sitter at 3 depth levels (summary/standard/detailed) |
-| `mindmap.sample` | Read code snippets by line range for LLM interpretation |
-| `mindmap.build` | Construct mind map graph from LLM's architecture plan |
-| `mindmap.validate` | Check graph integrity (orphan nodes, broken edges, cycles) |
-| `mindmap.publish` | Bundle artifacts, emit structured output, write to disk |
+| `mindmap.discover` | Scan files, resolve canonical IDs/paths, and extract project context in one step |
+| `mindmap.inspect` | Parse discovered files or sample code snippets for LLM interpretation |
+| `mindmap.generate` | Build, validate, and publish the final mind map from artifacts + ArchitecturePlan |
 | `mindmap.overview` | Read a mind map JSON from disk and return an LLM-friendly project summary (minimal/standard/detailed) |
 
 ## Language Support
@@ -114,29 +110,29 @@ All languages are normalized into a **unified structure model**.
 ### Generate a Mind Map
 
 ```bash
-/mindmap /path/to/your/project
+/mindmap:generate /path/to/your/project
 ```
 
 ---
 
 ### Available Commands
 
-| Command    | Description                 |
-| ---------- | --------------------------- |
-| `/mindmap` | Generate architecture graph |
-| `/explain` | Explain a file/component    |
-| `/impact`  | Analyze change impact       |
+| Command             | Description                                      |
+| ------------------- | ------------------------------------------------ |
+| `/mindmap:generate` | Generate the architecture mind map for a repo   |
+| `/mindmap:explain`  | Explain a file's role and dependencies          |
+| `/mindmap:impact`   | Analyze the impact of changing a file           |
 
 ---
 
 ### Available Agents
 
-| Agent             | Description                  |
-| ----------------- | ---------------------------- |
-| `mindmap-agent`   | Runs full pipeline           |
-| `architect-agent` | Architecture-aware assistant |
-| `impact-agent`    | Dependency analysis          |
-| `onboard-agent`   | Project onboarding           |
+| Agent                      | Description                  |
+| -------------------------- | ---------------------------- |
+| `mindmap:mindmap-agent`    | Runs full pipeline           |
+| `mindmap:architect-agent`  | Architecture-aware assistant |
+| `mindmap:impact-agent`     | Dependency analysis          |
+| `mindmap:onboard-agent`    | Project onboarding           |
 
 ---
 
@@ -166,7 +162,7 @@ Structured graph (MindMapJSON):
 * **Nodes**
 
   * root, group, file, symbol
-  * metadata: role, importance, confidence
+  * metadata: role, importance, confidence, optional descriptions for highlighted files
 
 * **Edges**
 

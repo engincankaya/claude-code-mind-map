@@ -1,0 +1,21 @@
+{
+  "name": "mind-map-plugins",
+  "owner": {
+    "name": "Engincan Kaya"
+  },
+  "metadata": {
+    "description": "Architecture-aware mind map generator plugin for Claude Code"
+  },
+  "plugins": [
+    {
+      "name": "mindmap",
+      "source": "./mindmap-plugin",
+      "description": "Architecture-aware mind map generator for code repositories using Tree-sitter parsing",
+      "version": "1.0.0",
+      "author": {
+        "name": "Engincan Kaya"
+      },
+      "keywords": ["architecture", "mindmap", "tree-sitter", "codebase", "visualization"]
+    }
+  ]
+}

@@ -1,8 +1,11 @@
 {
+  "_comment": "TODO: npm'e publish ettikten sonra command: npx, args: [-y, mindmap-mcp-server] olarak güncelle",
   "mcpServers": {
     "mindmap": {
       "command": "node",
-      "args": ["./mcp-server/dist/index.js"]
+      "args": [
+        "/Users/engincankaya/Desktop/Calismalar/new/mind-map/mcp-server/dist/index.js"
+      ]
     }
   }
 }

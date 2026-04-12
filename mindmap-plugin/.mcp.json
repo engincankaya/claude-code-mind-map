@@ -1,8 +1,9 @@
 {
+  "_comment": "Uses ${CLAUDE_PLUGIN_ROOT} so the plugin is portable. TODO: after publishing to npm, switch to command: npx, args: [-y, mindmap-mcp-server].",
   "mcpServers": {
     "mindmap": {
       "command": "node",
-      "args": ["/Users/engincankaya/Desktop/Calismalar/new/mind-map/mcp-server/dist/index.js"]
+      "args": ["${CLAUDE_PLUGIN_ROOT}/../mcp-server/dist/index.js"]
     }
   }
 }

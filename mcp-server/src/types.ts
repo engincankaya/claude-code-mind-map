@@ -25,3 +25,16 @@ export function errorResult(message: string): ToolResult {
     content: [{ type: "text", text: JSON.stringify({ error: message }) }],
   };
 }
+
+export function parseJsonToolResult<T>(result: ToolResult): T {
+  const text = result.content[0]?.text;
+  if (!text) {
+    throw new Error("Tool result did not contain JSON text");
+  }
+
+  const data = JSON.parse(text) as T & { error?: string };
+  if (typeof data === "object" && data !== null && "error" in data && data.error) {
+    throw new Error(String(data.error));
+  }
+  return data as T;
+}

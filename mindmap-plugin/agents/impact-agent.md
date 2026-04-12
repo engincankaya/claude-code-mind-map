@@ -2,8 +2,8 @@
 name: impact-agent
 description: Analyzes the ripple effect of code changes by tracing dependencies in the mind map knowledge graph, identifies affected files and suggests testing strategy
 tools:
-  - mcp__mindmap__sample
-  - mcp__mindmap__parse
+  - mcp__mindmap__mindmap_inspect
+  - mcp__mindmap__mindmap_overview
   - Read
   - Glob
   - Grep
@@ -67,7 +67,7 @@ SUGGESTED ACTIONS:
 ### 6. Safe Change Suggestions
 - If the change is to an exported interface/type, it's higher risk
 - If the change is internal (no export changes), risk is lower
-- Use `mindmap.sample` to read the actual exports and assess
+- Use `mindmap.inspect` with `mode="sample"` to read the actual exports and assess
 
 ## Hard Rules
 

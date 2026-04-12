@@ -196,6 +196,7 @@ function computeExplain(node) {
 
   return {
     role: node.type || node.metadata?.role || 'Unknown',
+    description: node.metadata?.description || '',
     group: groupNode ? groupNode.label : 'Root',
     groupType: groupNode ? groupNode.type : '',
     groupDescription: groupNode?.metadata?.description || '',
@@ -414,9 +415,13 @@ function computeExplainGroup(node) {
     id: c.id,
     label: c.displayLabel || c.label,
     role: c.type || c.metadata?.role || 'Unknown',
+    description: c.metadata?.description || '',
     importance: c.metadata?.importance || 'unknown',
     language: c.metadata?.language || '',
+    isHighlighted: c.metadata?.isHighlighted === true,
   }));
+  const highlightedFiles = files.filter(f => f.isHighlighted);
+  const otherFiles = files.filter(f => !f.isHighlighted);
 
   // Internal edges (both source and target within this group)
   const internalEdges = edges.filter(e => childIds.has(e.source) && childIds.has(e.target));
@@ -483,6 +488,8 @@ function computeExplainGroup(node) {
     description: node.metadata?.description || '',
     type: node.type || '',
     files,
+    highlightedFiles,
+    otherFiles,
     internalEdgeCount: internalEdges.length,
     externalOutgoing,
     externalIncoming,
@@ -563,8 +570,9 @@ function showDetailCard(node) {
     closeDetailCard();
   });
 
-  // ── 1. Role ──
-  addSection(card, 'Role', `<div class="detail-role-text">${esc(explain.role)}</div>`);
+  // ── 1. Description / Role ──
+  const fileNarrative = explain.description || explain.role;
+  addSection(card, explain.description ? 'Description' : 'Role', `<div class="detail-role-text">${esc(fileNarrative)}</div>`);
 
   // ── 2. Group ──
   const groupHtml = `<span class="detail-badge detail-badge--group">${esc(explain.group)}</span>
@@ -775,6 +783,7 @@ function renderGroupPanel(node) {
       <div class="detail-meta-row">
         <span class="detail-badge detail-badge--group">${explain.files.length} files</span>
         <span class="detail-badge detail-badge--group">${explain.internalEdgeCount} internal edges</span>
+        ${explain.highlightedFiles.length ? `<span class="detail-badge detail-badge--group">${explain.highlightedFiles.length} key</span>` : ''}
         ${coreCount ? `<span class="detail-badge detail-badge--core">${coreCount} core</span>` : ''}
         ${supportingCount ? `<span class="detail-badge detail-badge--supporting">${supportingCount} supporting</span>` : ''}
         ${peripheralCount ? `<span class="detail-badge detail-badge--peripheral">${peripheralCount} peripheral</span>` : ''}
@@ -804,8 +813,25 @@ function renderGroupPanel(node) {
     addPanelSection(panel, `Internal Communication (${internalEdges.length})`, internalHtml);
   }
 
-  // ── Files list ──
-  const filesHtml = explain.files.map(f => {
+  // ── Key files ──
+  if (explain.highlightedFiles.length) {
+    const keyFilesHtml = explain.highlightedFiles.map(f => {
+      const impClass = f.importance ? `detail-badge--${f.importance}` : '';
+      const narrative = f.description || f.role;
+      return `<div class="group-panel__file" data-file-id="${f.id}">
+        <div class="group-panel__file-top">
+          <span class="group-panel__file-name" data-node-id="${f.id}">${esc(f.label)}</span>
+          <span class="detail-badge ${impClass}">${f.importance}</span>
+          ${f.language ? `<span class="detail-badge detail-badge--lang">${f.language}</span>` : ''}
+        </div>
+        <div class="group-panel__file-role">${esc(narrative)}</div>
+      </div>`;
+    }).join('');
+    addPanelSection(panel, `Key Files (${explain.highlightedFiles.length})`, `<div class="group-panel__file-list">${keyFilesHtml}</div>`);
+  }
+
+  // ── Other files ──
+  const filesHtml = explain.otherFiles.map(f => {
     const impClass = f.importance ? `detail-badge--${f.importance}` : '';
     return `<div class="group-panel__file" data-file-id="${f.id}">
       <div class="group-panel__file-top">
@@ -816,7 +842,9 @@ function renderGroupPanel(node) {
       <div class="group-panel__file-role">${esc(f.role)}</div>
     </div>`;
   }).join('');
-  addPanelSection(panel, `Files (${explain.files.length})`, `<div class="group-panel__file-list">${filesHtml}</div>`);
+  if (explain.otherFiles.length) {
+    addPanelSection(panel, `Other Files (${explain.otherFiles.length})`, `<div class="group-panel__file-list">${filesHtml}</div>`);
+  }
 
   // ── Summary ──
   const summaryEl = document.createElement('div');

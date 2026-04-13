@@ -160,6 +160,23 @@ server.registerTool(
         .string()
         .optional()
         .describe("Filter to a specific group by name (e.g. 'API Layer')"),
+      selected_repo_id: z
+        .string()
+        .optional()
+        .describe(
+          "GitHub repository in 'owner/repo' format. When set, the tool fetches " +
+          "mindmap-output.json from the repo via the GitHub raw contents API and " +
+          "caches it locally. When omitted, the local mindmap-output.json is used.",
+        ),
+      ref: z
+        .string()
+        .optional()
+        .describe("Optional git ref (branch, tag, or commit SHA). Defaults to the repo's default branch."),
+      force_refresh: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe("If true, bypass the local cache and re-fetch from GitHub."),
     },
   },
   async (args) => handleOverview(args),

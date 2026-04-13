@@ -2,10 +2,13 @@ import * as fs from "fs/promises";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import { type ToolResult, jsonResult, errorResult } from "../types.js";
+import { fetchGithubFileRaw, parseRepoId } from "../lib/github-fetch.js";
+import { readCache, writeCache, cachePathFor } from "../lib/mindmap-cache.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const MINDMAP_PATH = path.resolve(__dirname, "../../..", "mindmap-output.json");
+const MINDMAP_FILE_IN_REPO = "mindmap-output.json";
 
 interface MindMapNode {
   id: string;
@@ -44,6 +47,9 @@ type Depth = "minimal" | "standard" | "detailed";
 interface OverviewArgs {
   depth?: Depth;
   focus?: string;
+  selected_repo_id?: string;
+  ref?: string;
+  force_refresh?: boolean;
 }
 
 // ─── Helpers ────────────────────────────────────────────────────
@@ -252,12 +258,51 @@ function buildDetailed(mindmap: MindMapJSON, focus?: string) {
 
 // ─── Handler ────────────────────────────────────────────────────
 
+async function loadMindmapRaw(args: OverviewArgs): Promise<{ raw: string; source: string }> {
+  if (!args.selected_repo_id) {
+    const raw = await fs.readFile(MINDMAP_PATH, "utf-8");
+    return { raw, source: MINDMAP_PATH };
+  }
+
+  const { owner, repo } = parseRepoId(args.selected_repo_id);
+  const cacheKey = args.ref
+    ? `${owner}/${repo}@${args.ref}`
+    : `${owner}/${repo}`;
+
+  if (!args.force_refresh) {
+    const cached = await readCache(cacheKey);
+    if (cached !== null) {
+      return { raw: cached, source: `cache:${cachePathFor(cacheKey)}` };
+    }
+  }
+
+  const raw = await fetchGithubFileRaw({
+    owner,
+    repo,
+    path: MINDMAP_FILE_IN_REPO,
+    ref: args.ref,
+  });
+  await writeCache(cacheKey, raw);
+  return { raw, source: `github:${owner}/${repo}${args.ref ? `@${args.ref}` : ""}` };
+}
+
 export async function handleOverview(args: OverviewArgs): Promise<ToolResult> {
   const { depth = "standard", focus } = args;
-  const filePath = MINDMAP_PATH;
+
+  let raw: string;
+  let source: string;
+  try {
+    ({ raw, source } = await loadMindmapRaw(args));
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code === "ENOENT") {
+      return errorResult(`Mind map file not found: ${MINDMAP_PATH}`);
+    }
+    return errorResult(
+      `overview failed to load mindmap: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
 
   try {
-    const raw = await fs.readFile(filePath, "utf-8");
     const mindmap: MindMapJSON = JSON.parse(raw);
 
     if (!mindmap.nodes || !mindmap.edges) {
@@ -277,11 +322,8 @@ export async function handleOverview(args: OverviewArgs): Promise<ToolResult> {
         break;
     }
 
-    return jsonResult(result);
+    return jsonResult({ source, ...(result as object) });
   } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === "ENOENT") {
-      return errorResult(`Mind map file not found: ${filePath}`);
-    }
     return errorResult(
       `overview failed: ${err instanceof Error ? err.message : String(err)}`,
     );

@@ -89,7 +89,8 @@ This separation ensures:
 | `mindmap.discover` | Scan files, resolve canonical IDs/paths, and extract project context in one step |
 | `mindmap.inspect` | Parse discovered files or sample code snippets for LLM interpretation |
 | `mindmap.generate` | Build, validate, and publish the final mind map from artifacts + ArchitecturePlan |
-| `mindmap.overview` | Read a mind map JSON from disk and return an LLM-friendly project summary (minimal/standard/detailed) |
+| `mindmap.overview` | Read a mind map JSON and return a project-level summary (minimal/standard/detailed) |
+| `mindmap.find` | Search the mind map for a specific feature, file, role, subsystem, or relationship |
 
 ## Language Support
 

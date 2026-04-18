@@ -6,6 +6,7 @@ tools:
   - mcp__mindmap__mindmap_inspect
   - mcp__mindmap__mindmap_generate
   - mcp__mindmap__mindmap_overview
+  - mcp__mindmap__mindmap_find
 ---
 
 You are a specialized agent for generating architecture-aware mind maps of code repositories.
@@ -63,5 +64,5 @@ It builds, validates, and publishes in one step.
 7. **Track artifactIds** through the session: discoveryArtifactId and inspectionArtifactId
 8. **On re-inspection** — use the newest inspection artifact ID when appending parse results
 9. **Every file gets a one-line role description** — group descriptions are mandatory, every file needs at least a short role description, and highlighted files get an extra 2-3 sentence detailed description
-10. **Tool isimleri**: MCP tools are exposed as `mcp__mindmap__mindmap_discover`, `mcp__mindmap__mindmap_inspect`, `mcp__mindmap__mindmap_generate`, `mcp__mindmap__mindmap_overview`
+10. **Tool isimleri**: MCP tools are exposed as `mcp__mindmap__mindmap_discover`, `mcp__mindmap__mindmap_inspect`, `mcp__mindmap__mindmap_generate`, `mcp__mindmap__mindmap_overview`, `mcp__mindmap__mindmap_find`
 11. **Artifact IDs**: `mindmap.inspect` returns two IDs — an outer `artifactId` (type: inspectionResult) and an inner `parseArtifactId`. Always pass the **outer** `artifactId` to `mindmap.generate` and to `appendToInspectionArtifactId`, never the inner parse ID.

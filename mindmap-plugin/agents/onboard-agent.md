@@ -4,6 +4,7 @@ description: Interactive project onboarding guide that walks new developers thro
 tools:
   - mcp__mindmap__mindmap_inspect
   - mcp__mindmap__mindmap_overview
+  - mcp__mindmap__mindmap_find
   - Read
   - Glob
   - Grep

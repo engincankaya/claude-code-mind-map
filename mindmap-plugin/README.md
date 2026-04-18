@@ -42,7 +42,8 @@ claude plugin install github:engincankaya/mind-map
 - `mindmap.discover` — scan + resolve + context in one call
 - `mindmap.inspect` — parse (summary/standard/detailed) or sample code snippets
 - `mindmap.generate` — build + validate + publish the final mind map
-- `mindmap.overview` — read an existing `mindmap-output.json` and return an LLM-friendly project summary
+- `mindmap.overview` — read an existing `mindmap-output.json` and return a project-level summary
+- `mindmap.find` — search an existing mind map for a specific feature, file, role, subsystem, or relationship
 
 ## Supported Languages
 

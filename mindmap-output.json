@@ -1,9 +1,9 @@
 {
   "meta": {
-    "generatedAt": "2026-04-13T12:46:20.198Z",
+    "generatedAt": "2026-04-18T13:11:23.460Z",
     "rootPath": "",
-    "view": "default",
-    "nodeCount": 64,
+    "view": "hierarchical-tree",
+    "nodeCount": 71,
     "edgeCount": 29,
     "toolVersions": {
       "mcpServer": "0.1.0",
@@ -13,24 +13,24 @@
   "nodes": [
     {
       "id": "root",
-      "label": "Layered MCP Server + Claude Code Plugin (Tools extract facts, LLM interprets meaning)",
+      "label": "Monorepo with Pipeline Architecture — MCP server implements a staged pipeline (discover → inspect → generate) with an in-memory artifact store for state transfer, language-specific normalizers following a strategy/registry pattern, and a read-only query layer (overview/find). A vanilla JS frontend provides interactive visualization. Claude Code plugin agents and commands orchestrate the LLM-driven interpretation layer.",
       "kind": "root",
       "type": "architecture",
       "metadata": {
-        "pattern": "Layered MCP Server + Claude Code Plugin (Tools extract facts, LLM interprets meaning)"
+        "pattern": "Monorepo with Pipeline Architecture — MCP server implements a staged pipeline (discover → inspect → generate) with an in-memory artifact store for state transfer, language-specific normalizers following a strategy/registry pattern, and a read-only query layer (overview/find). A vanilla JS frontend provides interactive visualization. Claude Code plugin agents and commands orchestrate the LLM-driven interpretation layer."
       },
       "confidence": 1
     },
     {
-      "id": "g-97be19b5d20a9f31",
-      "label": "MCP Server Entry",
+      "id": "g-f22d402ee12245d2",
+      "label": "MCP Server Core",
       "kind": "group",
-      "type": "infrastructure",
+      "type": "layer",
       "parentId": "root",
       "metadata": {
-        "description": "Bootstraps the MCP server over stdio and registers the public mindmap tools (discover, inspect, generate, overview) using @modelcontextprotocol/sdk.",
-        "fileCount": 4,
-        "highlightFileCount": 1
+        "description": "The central orchestration layer of the MCP server. Contains the entry point that wires all tools together, the artifact store that enables stateful pipeline execution, shared type definitions for tool responses, and the overall server initialization logic. This group represents the backbone that connects all other server components.",
+        "fileCount": 3,
+        "highlightFileCount": 2
       },
       "confidence": 1
     },
@@ -38,77 +38,62 @@
       "id": "f-e8f7ed71d93ad489",
       "label": "index.ts",
       "kind": "file",
-      "type": "mcp-entry",
-      "parentId": "g-97be19b5d20a9f31",
+      "type": "entry-point",
+      "parentId": "g-f22d402ee12245d2",
       "metadata": {
         "canonicalPath": "mcp-server/src/index.ts",
         "fileId": "e8f7ed71d93ad489",
         "language": "typescript",
-        "role": "mcp-entry",
+        "role": "entry-point",
         "importance": "core",
         "isHighlighted": true,
-        "description": "MCP server entrypoint registering discover/inspect/generate/overview tools over stdio using @modelcontextprotocol/sdk."
+        "description": "Main MCP server entry point that instantiates the ArtifactStore, creates the McpServer, and registers all five public tools (discover, inspect, generate, overview, find) with their Zod input schemas. This is the central wiring point that connects all tool handlers to the MCP protocol via stdio transport. It defines the entire public API surface of the server."
       },
-      "confidence": 0.98
+      "confidence": 1
+    },
+    {
+      "id": "f-7877a9d693b32198",
+      "label": "artifact-store.ts",
+      "kind": "file",
+      "type": "state-management",
+      "parentId": "g-f22d402ee12245d2",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/lib/artifact-store.ts",
+        "fileId": "7877a9d693b32198",
+        "language": "typescript",
+        "role": "state-management",
+        "importance": "core",
+        "isHighlighted": true,
+        "description": "In-memory artifact store that holds pipeline state (discovery results, parse results, mind map JSON, validation reports) by UUID. Enables the 'pass IDs not data' pattern that saves 75-87% tokens by letting the LLM work with compact summaries while tools access full data internally. This is the architectural keystone enabling the staged pipeline."
+      },
+      "confidence": 1
     },
     {
       "id": "f-b4e6a59725650275",
       "label": "types.ts",
       "kind": "file",
-      "type": "shared-types",
-      "parentId": "g-97be19b5d20a9f31",
+      "type": "type-definitions",
+      "parentId": "g-f22d402ee12245d2",
       "metadata": {
         "canonicalPath": "mcp-server/src/types.ts",
         "fileId": "b4e6a59725650275",
         "language": "typescript",
-        "role": "shared-types",
+        "role": "type-definitions",
         "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
-      "id": "f-f3494fd36ee5f868",
-      "label": "package.json",
-      "kind": "file",
-      "type": "config",
-      "parentId": "g-97be19b5d20a9f31",
-      "metadata": {
-        "canonicalPath": "mcp-server/package.json",
-        "fileId": "f3494fd36ee5f868",
-        "language": "json",
-        "role": "config",
-        "importance": "supporting",
-        "isHighlighted": false
-      },
-      "confidence": 0.95
-    },
-    {
-      "id": "f-3c679b93a3052f8d",
-      "label": "tsconfig.json",
-      "kind": "file",
-      "type": "config",
-      "parentId": "g-97be19b5d20a9f31",
-      "metadata": {
-        "canonicalPath": "mcp-server/tsconfig.json",
-        "fileId": "3c679b93a3052f8d",
-        "language": "json",
-        "role": "config",
-        "importance": "peripheral",
-        "isHighlighted": false
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "g-44db0e6717688a70",
-      "label": "Public MCP Tools",
+      "id": "g-c95d0dc41c77c77e",
+      "label": "Pipeline Tools — Discovery",
       "kind": "group",
       "type": "feature",
       "parentId": "root",
       "metadata": {
-        "description": "The four LLM-facing tools that form the mindmap pipeline: discover files, inspect structure, generate the mind map, and summarize existing outputs.",
+        "description": "The first stage of the mind map generation pipeline. The discover tool orchestrates three internal sub-tools (scan, resolve, context) to transform a raw repository path into a fully indexed, ID-referenced file catalog with project metadata. This stage produces the discovery artifact that all subsequent stages depend on.",
         "fileCount": 4,
-        "highlightFileCount": 3
+        "highlightFileCount": 2
       },
       "confidence": 1
     },
@@ -116,79 +101,16 @@
       "id": "f-d3633fc4fa0e2e79",
       "label": "discover.ts",
       "kind": "file",
-      "type": "tool-discover",
-      "parentId": "g-44db0e6717688a70",
+      "type": "tool-handler",
+      "parentId": "g-c95d0dc41c77c77e",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/discover.ts",
         "fileId": "d3633fc4fa0e2e79",
         "language": "typescript",
-        "role": "tool-discover",
+        "role": "tool-handler",
         "importance": "core",
         "isHighlighted": true,
-        "description": "mindmap.discover tool: composes scan+resolve+context into a single discovery artifact."
-      },
-      "confidence": 0.95
-    },
-    {
-      "id": "f-214b08ce78fc29af",
-      "label": "inspect.ts",
-      "kind": "file",
-      "type": "tool-inspect",
-      "parentId": "g-44db0e6717688a70",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/inspect.ts",
-        "fileId": "214b08ce78fc29af",
-        "language": "typescript",
-        "role": "tool-inspect",
-        "importance": "core",
-        "isHighlighted": true,
-        "description": "mindmap.inspect tool: parse (hierarchical depth) or sample code snippets from discovered files."
-      },
-      "confidence": 0.95
-    },
-    {
-      "id": "f-6de020c80ab11b7d",
-      "label": "generate.ts",
-      "kind": "file",
-      "type": "tool-generate",
-      "parentId": "g-44db0e6717688a70",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/generate.ts",
-        "fileId": "6de020c80ab11b7d",
-        "language": "typescript",
-        "role": "tool-generate",
-        "importance": "core",
-        "isHighlighted": true,
-        "description": "mindmap.generate tool: build + validate + publish the mind map from plan and artifacts."
-      },
-      "confidence": 0.97
-    },
-    {
-      "id": "f-1242855a58408f3e",
-      "label": "overview.ts",
-      "kind": "file",
-      "type": "tool-overview",
-      "parentId": "g-44db0e6717688a70",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/tools/overview.ts",
-        "fileId": "1242855a58408f3e",
-        "language": "typescript",
-        "role": "tool-overview",
-        "importance": "supporting",
-        "isHighlighted": false
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "g-fafbf89c6587e95a",
-      "label": "Internal Pipeline Steps",
-      "kind": "group",
-      "type": "layer",
-      "parentId": "root",
-      "metadata": {
-        "description": "Deterministic building blocks invoked by the public tools: scan, resolve, context, parse, sample, build, validate, publish. They extract facts without any LLM reasoning.",
-        "fileCount": 8,
-        "highlightFileCount": 3
+        "description": "Handles the 'mindmap.discover' tool — the pipeline's first stage. Orchestrates file scanning (via scan.ts), path resolution (via resolve.ts), and project context extraction (via context.ts) into a single discovery artifact. This is the gateway that transforms a raw repository path into structured, ID-referenced file metadata."
       },
       "confidence": 1
     },
@@ -196,132 +118,271 @@
       "id": "f-d69795c6d50526f3",
       "label": "scan.ts",
       "kind": "file",
-      "type": "internal-scan",
-      "parentId": "g-fafbf89c6587e95a",
+      "type": "file-scanner",
+      "parentId": "g-c95d0dc41c77c77e",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/scan.ts",
         "fileId": "d69795c6d50526f3",
         "language": "typescript",
-        "role": "internal-scan",
+        "role": "file-scanner",
         "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
       "id": "f-319363d430e9d9bc",
       "label": "resolve.ts",
       "kind": "file",
-      "type": "internal-resolve",
-      "parentId": "g-fafbf89c6587e95a",
+      "type": "path-resolver",
+      "parentId": "g-c95d0dc41c77c77e",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/resolve.ts",
         "fileId": "319363d430e9d9bc",
         "language": "typescript",
-        "role": "internal-resolve",
+        "role": "path-resolver",
         "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
       "id": "f-f23002dfc341cd9c",
       "label": "context.ts",
       "kind": "file",
-      "type": "internal-context",
-      "parentId": "g-fafbf89c6587e95a",
+      "type": "context-extractor",
+      "parentId": "g-c95d0dc41c77c77e",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/context.ts",
         "fileId": "f23002dfc341cd9c",
         "language": "typescript",
-        "role": "internal-context",
+        "role": "context-extractor",
         "importance": "supporting",
         "isHighlighted": true,
-        "description": "Internal context helper: extracts README, package files, folder structure and language stats."
+        "description": "Extracts project context from a repository root — detects READMEs, package managers (npm, cargo, go, pip, maven), config files, entry points, folder structure, and language statistics. Supports multiple ecosystem detection patterns. Provides the contextual metadata that helps the LLM understand the project's technology stack."
       },
-      "confidence": 0.9
+      "confidence": 1
+    },
+    {
+      "id": "g-6714c3885722cd4d",
+      "label": "Pipeline Tools — Inspection",
+      "kind": "group",
+      "type": "feature",
+      "parentId": "root",
+      "metadata": {
+        "description": "The second stage of the pipeline. The inspect tool provides two modes: 'parse' mode uses Tree-sitter to extract structural data (imports, exports, symbols) at three depth levels (summary/standard/detailed), while 'sample' mode reads raw code snippets. The parse tool is the core extraction engine that dispatches to language-specific normalizers. Supports incremental append for hierarchical depth parsing.",
+        "fileCount": 3,
+        "highlightFileCount": 2
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-214b08ce78fc29af",
+      "label": "inspect.ts",
+      "kind": "file",
+      "type": "tool-handler",
+      "parentId": "g-6714c3885722cd4d",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/inspect.ts",
+        "fileId": "214b08ce78fc29af",
+        "language": "typescript",
+        "role": "tool-handler",
+        "importance": "core",
+        "isHighlighted": true,
+        "description": "Handles the 'mindmap.inspect' tool — the pipeline's second stage. Supports two modes: 'parse' (structural analysis via Tree-sitter at summary/standard/detailed depth) and 'sample' (raw code snippet extraction). Manages parse artifact creation and the append-to-existing-artifact workflow for hierarchical parsing. This is where raw code is transformed into structured symbols, imports, and exports."
+      },
+      "confidence": 1
     },
     {
       "id": "f-049ee2f92b096d77",
       "label": "parse.ts",
       "kind": "file",
-      "type": "internal-parse",
-      "parentId": "g-fafbf89c6587e95a",
+      "type": "parser",
+      "parentId": "g-6714c3885722cd4d",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/parse.ts",
         "fileId": "049ee2f92b096d77",
         "language": "typescript",
-        "role": "internal-parse",
+        "role": "parser",
         "importance": "core",
         "isHighlighted": true,
-        "description": "Tree-sitter-backed parser with summary/standard/detailed depth levels."
+        "description": "Core parsing engine that uses Tree-sitter to extract structural information (imports, exports, symbols) from source files at three depth levels (summary/standard/detailed). Dispatches to language-specific normalizers and manages parse result accumulation with append semantics. This is the deterministic extraction backbone of the entire system."
       },
-      "confidence": 0.93
+      "confidence": 1
     },
     {
       "id": "f-b49504342ab0a9f7",
       "label": "sample.ts",
       "kind": "file",
-      "type": "internal-sample",
-      "parentId": "g-fafbf89c6587e95a",
+      "type": "code-sampler",
+      "parentId": "g-6714c3885722cd4d",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/sample.ts",
         "fileId": "b49504342ab0a9f7",
         "language": "typescript",
-        "role": "internal-sample",
-        "importance": "peripheral",
+        "role": "code-sampler",
+        "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
+    },
+    {
+      "id": "g-0a295bffc3ad3bd8",
+      "label": "Pipeline Tools — Generation",
+      "kind": "group",
+      "type": "feature",
+      "parentId": "root",
+      "metadata": {
+        "description": "The third and final stage of the pipeline. The generate tool orchestrates a build → validate → publish sub-pipeline. The build tool constructs the MindMapJSON graph from the LLM's ArchitecturePlan, the validate tool checks structural integrity, and the publish tool writes the result to disk and the artifact store. This is where LLM interpretation materializes into the final output.",
+        "fileCount": 4,
+        "highlightFileCount": 2
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-6de020c80ab11b7d",
+      "label": "generate.ts",
+      "kind": "file",
+      "type": "tool-handler",
+      "parentId": "g-0a295bffc3ad3bd8",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/generate.ts",
+        "fileId": "6de020c80ab11b7d",
+        "language": "typescript",
+        "role": "tool-handler",
+        "importance": "core",
+        "isHighlighted": true,
+        "description": "Handles the 'mindmap.generate' tool — the pipeline's final stage. Orchestrates the build → validate → publish sub-pipeline, taking the LLM's ArchitecturePlan plus discovery and inspection artifacts and producing the final mind map JSON. This is where LLM interpretation meets deterministic graph construction."
+      },
+      "confidence": 1
     },
     {
       "id": "f-d638059166d4e8e2",
       "label": "build.ts",
       "kind": "file",
-      "type": "internal-build",
-      "parentId": "g-fafbf89c6587e95a",
+      "type": "graph-builder",
+      "parentId": "g-0a295bffc3ad3bd8",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/build.ts",
         "fileId": "d638059166d4e8e2",
         "language": "typescript",
-        "role": "internal-build",
+        "role": "graph-builder",
         "importance": "core",
         "isHighlighted": true,
-        "description": "Builds MindMapJSON (nodes, edges, groups) from discovery + inspection + plan."
+        "description": "Builds the MindMapJSON graph from the LLM's ArchitecturePlan and parsed artifacts. Creates hierarchical nodes (root → group → file), generates edges from import relationships and LLM-specified relationships, applies edge aggregation policies, and computes metadata like confidence scores. This is the core graph construction engine that translates architectural intent into a concrete data structure."
       },
-      "confidence": 0.93
+      "confidence": 1
     },
     {
       "id": "f-37a1e3ff7092236b",
       "label": "validate.ts",
       "kind": "file",
-      "type": "internal-validate",
-      "parentId": "g-fafbf89c6587e95a",
+      "type": "validator",
+      "parentId": "g-0a295bffc3ad3bd8",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/validate.ts",
         "fileId": "37a1e3ff7092236b",
         "language": "typescript",
-        "role": "internal-validate",
+        "role": "validator",
         "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
       "id": "f-0f11ab0fd4984fda",
       "label": "publish.ts",
       "kind": "file",
-      "type": "internal-publish",
-      "parentId": "g-fafbf89c6587e95a",
+      "type": "publisher",
+      "parentId": "g-0a295bffc3ad3bd8",
       "metadata": {
         "canonicalPath": "mcp-server/src/tools/publish.ts",
         "fileId": "0f11ab0fd4984fda",
         "language": "typescript",
-        "role": "internal-publish",
+        "role": "publisher",
         "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
+    },
+    {
+      "id": "g-f7853261374ea329",
+      "label": "Query Tools",
+      "kind": "group",
+      "type": "feature",
+      "parentId": "root",
+      "metadata": {
+        "description": "Read-only tools for querying previously generated mind maps. The overview tool provides project-level architectural summaries at three depth levels (minimal/standard/detailed), while the find tool enables semantic search for specific features, files, or relationships. Both support local files and remote GitHub repositories via the github-fetch and mindmap-cache infrastructure. Defines the shared MindMapJSON interfaces used across the query layer.",
+        "fileCount": 4,
+        "highlightFileCount": 2
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-1242855a58408f3e",
+      "label": "overview.ts",
+      "kind": "file",
+      "type": "tool-handler",
+      "parentId": "g-f7853261374ea329",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/overview.ts",
+        "fileId": "1242855a58408f3e",
+        "language": "typescript",
+        "role": "tool-handler",
+        "importance": "core",
+        "isHighlighted": true,
+        "description": "Handles the 'mindmap.overview' tool — a read-only query tool that loads a previously generated mind map JSON and returns a project-level architectural summary at three depth levels (minimal/standard/detailed). Supports both local file and remote GitHub repository sources. Defines the shared MindMapJSON, MindMapNode, and MindMapEdge interfaces used across the query layer."
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-52bf8d13b5700c39",
+      "label": "find.ts",
+      "kind": "file",
+      "type": "tool-handler",
+      "parentId": "g-f7853261374ea329",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/find.ts",
+        "fileId": "52bf8d13b5700c39",
+        "language": "typescript",
+        "role": "tool-handler",
+        "importance": "core",
+        "isHighlighted": true,
+        "description": "Handles the 'mindmap.find' tool — a semantic search tool that queries an existing mind map for specific architecture areas, features, files, or relationships. Uses multi-strategy matching (direct string match, token-based fuzzy match) with group and file scoring. Provides targeted answers when the user asks about specific subsystems."
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-a9920839e2bc1609",
+      "label": "find.test.ts",
+      "kind": "file",
+      "type": "test",
+      "parentId": "g-f7853261374ea329",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/find.test.ts",
+        "fileId": "a9920839e2bc1609",
+        "language": "typescript",
+        "role": "test",
+        "importance": "peripheral",
+        "isHighlighted": false
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-f478333105265635",
+      "label": "overview.test.ts",
+      "kind": "file",
+      "type": "test",
+      "parentId": "g-f7853261374ea329",
+      "metadata": {
+        "canonicalPath": "mcp-server/src/tools/overview.test.ts",
+        "fileId": "f478333105265635",
+        "language": "typescript",
+        "role": "test",
+        "importance": "peripheral",
+        "isHighlighted": false
+      },
+      "confidence": 1
     },
     {
       "id": "g-77c9f5ccaf617693",
@@ -330,9 +391,9 @@
       "type": "domain",
       "parentId": "root",
       "metadata": {
-        "description": "Per-language tree-sitter normalizers that turn parsed ASTs into uniform symbol/import records. A registry maps language IDs to the right normalizer behind a shared interface.",
+        "description": "Strategy pattern implementation for multi-language source code analysis. Each normalizer takes a Tree-sitter AST for a specific language and produces a universal NormalizerResult containing imports, exports, and symbols. The registry maps language identifiers to normalizer functions, and the types module defines the shared contracts. Supports five Tier-1 languages: TypeScript/JavaScript, Python, Go, Rust, and Java.",
         "fileCount": 7,
-        "highlightFileCount": 2
+        "highlightFileCount": 3
       },
       "confidence": 1
     },
@@ -340,264 +401,204 @@
       "id": "f-71804e438b80b7b3",
       "label": "registry.ts",
       "kind": "file",
-      "type": "lang-registry",
+      "type": "registry",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/registry.ts",
         "fileId": "71804e438b80b7b3",
         "language": "typescript",
-        "role": "lang-registry",
+        "role": "registry",
         "importance": "core",
         "isHighlighted": true,
-        "description": "Language registry mapping language IDs to normalizer modules."
+        "description": "Central language normalizer registry that maps language identifiers to their Tree-sitter normalizer functions. Supports TypeScript/JavaScript, Python, Go, Rust, and Java. This is the dispatch hub that enables multi-language parsing through the strategy pattern."
       },
-      "confidence": 0.93
+      "confidence": 1
     },
     {
       "id": "f-e5546eb9121295ca",
       "label": "types.ts",
       "kind": "file",
-      "type": "lang-types",
+      "type": "type-definitions",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/types.ts",
         "fileId": "e5546eb9121295ca",
         "language": "typescript",
-        "role": "lang-types",
-        "importance": "supporting",
-        "isHighlighted": false
+        "role": "type-definitions",
+        "importance": "core",
+        "isHighlighted": true,
+        "description": "Defines the shared type contracts for the language normalizer system — LanguageNormalizer function type, NormalizerResult, ImportInfo, ExportInfo, SymbolInfo interfaces, and SymbolKind enum. These types form the universal intermediate representation that all language normalizers must produce."
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
       "id": "f-53e403f99bb9ad8b",
       "label": "normalizer.ts",
       "kind": "file",
-      "type": "lang-ts-normalizer",
+      "type": "language-normalizer",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/typescript/normalizer.ts",
         "fileId": "53e403f99bb9ad8b",
         "language": "typescript",
-        "role": "lang-ts-normalizer",
+        "role": "language-normalizer",
         "importance": "core",
         "isHighlighted": true,
-        "description": "TypeScript/JavaScript tree-sitter normalizer producing symbols and imports."
+        "description": "TypeScript/JavaScript normalizer — the most complex and feature-rich normalizer (420 lines). Extracts imports (ES modules, CommonJS require, dynamic import), exports (named, default, re-exports), and symbols (functions, classes, interfaces, types, enums, variables) from TypeScript and JavaScript ASTs. Handles edge cases like barrel files, namespace imports, and computed exports."
       },
-      "confidence": 0.93
+      "confidence": 1
     },
     {
       "id": "f-23744172e5f5fa22",
       "label": "normalizer.ts",
       "kind": "file",
-      "type": "lang-py-normalizer",
+      "type": "language-normalizer",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/python/normalizer.ts",
         "fileId": "23744172e5f5fa22",
         "language": "typescript",
-        "role": "lang-py-normalizer",
+        "role": "language-normalizer",
         "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
       "id": "f-5bb2bd36f52477e1",
       "label": "normalizer.ts",
       "kind": "file",
-      "type": "lang-go-normalizer",
+      "type": "language-normalizer",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/go/normalizer.ts",
         "fileId": "5bb2bd36f52477e1",
         "language": "typescript",
-        "role": "lang-go-normalizer",
+        "role": "language-normalizer",
         "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
       "id": "f-6521643ae5a54621",
       "label": "normalizer.ts",
       "kind": "file",
-      "type": "lang-rust-normalizer",
+      "type": "language-normalizer",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/rust/normalizer.ts",
         "fileId": "6521643ae5a54621",
         "language": "typescript",
-        "role": "lang-rust-normalizer",
+        "role": "language-normalizer",
         "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
       "id": "f-31630c0b361a7975",
       "label": "normalizer.ts",
       "kind": "file",
-      "type": "lang-java-normalizer",
+      "type": "language-normalizer",
       "parentId": "g-77c9f5ccaf617693",
       "metadata": {
         "canonicalPath": "mcp-server/src/languages/java/normalizer.ts",
         "fileId": "31630c0b361a7975",
         "language": "typescript",
-        "role": "lang-java-normalizer",
+        "role": "language-normalizer",
         "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
-      "id": "g-7446bda4f919b76c",
-      "label": "Core Libraries",
+      "id": "g-472fb3ce18aa2f2e",
+      "label": "Server Infrastructure",
       "kind": "group",
       "type": "infrastructure",
       "parentId": "root",
       "metadata": {
-        "description": "Cross-cutting infrastructure: artifact store for passing IDs between tools, tree-sitter loader, hashing, GitHub fetch, and local cache for mindmap outputs.",
-        "fileCount": 5,
+        "description": "Cross-cutting infrastructure supporting the MCP server: Tree-sitter WASM loader for initializing parsers at runtime, hashing utilities for generating stable IDs, GitHub API fetch for remote repository access, and a file-system cache for storing fetched mind maps locally. These utilities are shared across multiple tools and pipeline stages.",
+        "fileCount": 4,
         "highlightFileCount": 2
       },
       "confidence": 1
     },
     {
-      "id": "f-7877a9d693b32198",
-      "label": "artifact-store.ts",
-      "kind": "file",
-      "type": "lib-artifact-store",
-      "parentId": "g-7446bda4f919b76c",
-      "metadata": {
-        "canonicalPath": "mcp-server/src/lib/artifact-store.ts",
-        "fileId": "7877a9d693b32198",
-        "language": "typescript",
-        "role": "lib-artifact-store",
-        "importance": "core",
-        "isHighlighted": true,
-        "description": "In-memory artifact store that hands out IDs so tools pass references instead of payloads."
-      },
-      "confidence": 0.95
-    },
-    {
       "id": "f-abfe138c6245bc14",
       "label": "tree-sitter-loader.ts",
       "kind": "file",
-      "type": "lib-tree-sitter",
-      "parentId": "g-7446bda4f919b76c",
+      "type": "infrastructure",
+      "parentId": "g-472fb3ce18aa2f2e",
       "metadata": {
         "canonicalPath": "mcp-server/src/lib/tree-sitter-loader.ts",
         "fileId": "abfe138c6245bc14",
         "language": "typescript",
-        "role": "lib-tree-sitter",
-        "importance": "core",
+        "role": "infrastructure",
+        "importance": "supporting",
         "isHighlighted": true,
-        "description": "Lazy web-tree-sitter loader that caches Language objects per grammar."
+        "description": "Tree-sitter WASM loader that initializes the Tree-sitter runtime, loads language grammar WASM files, creates parsers, and caches them. Handles path resolution for grammar files relative to the package."
       },
-      "confidence": 0.93
+      "confidence": 1
     },
     {
       "id": "f-458b5c84e88c4ab9",
       "label": "hashing.ts",
       "kind": "file",
-      "type": "lib-hashing",
-      "parentId": "g-7446bda4f919b76c",
+      "type": "utility",
+      "parentId": "g-472fb3ce18aa2f2e",
       "metadata": {
         "canonicalPath": "mcp-server/src/lib/hashing.ts",
         "fileId": "458b5c84e88c4ab9",
         "language": "typescript",
-        "role": "lib-hashing",
-        "importance": "peripheral",
+        "role": "utility",
+        "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
       "id": "f-70f4a213b04ec18e",
       "label": "github-fetch.ts",
       "kind": "file",
-      "type": "lib-github-fetch",
-      "parentId": "g-7446bda4f919b76c",
+      "type": "infrastructure",
+      "parentId": "g-472fb3ce18aa2f2e",
       "metadata": {
         "canonicalPath": "mcp-server/src/lib/github-fetch.ts",
         "fileId": "70f4a213b04ec18e",
         "language": "typescript",
-        "role": "lib-github-fetch",
-        "importance": "peripheral",
-        "isHighlighted": false
+        "role": "infrastructure",
+        "importance": "supporting",
+        "isHighlighted": true,
+        "description": "GitHub API integration for fetching mindmap-output.json from remote repositories. Supports authenticated requests and repository ID parsing. Enables the overview/find tools to work with remote repos."
       },
-      "confidence": 0.88
+      "confidence": 1
     },
     {
       "id": "f-0fca320ca5c34ee8",
       "label": "mindmap-cache.ts",
       "kind": "file",
-      "type": "lib-cache",
-      "parentId": "g-7446bda4f919b76c",
+      "type": "infrastructure",
+      "parentId": "g-472fb3ce18aa2f2e",
       "metadata": {
         "canonicalPath": "mcp-server/src/lib/mindmap-cache.ts",
         "fileId": "0fca320ca5c34ee8",
         "language": "typescript",
-        "role": "lib-cache",
-        "importance": "peripheral",
+        "role": "infrastructure",
+        "importance": "supporting",
         "isHighlighted": false
-      },
-      "confidence": 0.88
-    },
-    {
-      "id": "g-62773d17d6c151b1",
-      "label": "Build Scripts",
-      "kind": "group",
-      "type": "infrastructure",
-      "parentId": "root",
-      "metadata": {
-        "description": "Post-build tooling that prepares the compiled CLI: shebang injection and copying tree-sitter WASM grammars.",
-        "fileCount": 2,
-        "highlightFileCount": 0
       },
       "confidence": 1
     },
     {
-      "id": "f-ebfaa12268ff6ae5",
-      "label": "add-shebang.js",
-      "kind": "file",
-      "type": "build-script",
-      "parentId": "g-62773d17d6c151b1",
-      "metadata": {
-        "canonicalPath": "mcp-server/scripts/add-shebang.js",
-        "fileId": "ebfaa12268ff6ae5",
-        "language": "javascript",
-        "role": "build-script",
-        "importance": "peripheral",
-        "isHighlighted": false
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "f-7c82f899da6733ab",
-      "label": "copy-grammars.js",
-      "kind": "file",
-      "type": "build-script",
-      "parentId": "g-62773d17d6c151b1",
-      "metadata": {
-        "canonicalPath": "mcp-server/scripts/copy-grammars.js",
-        "fileId": "7c82f899da6733ab",
-        "language": "javascript",
-        "role": "build-script",
-        "importance": "peripheral",
-        "isHighlighted": false
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "g-ef25e2e001cad444",
-      "label": "Frontend Viewer",
+      "id": "g-b77047cc13c89935",
+      "label": "Frontend Visualization",
       "kind": "group",
       "type": "feature",
       "parentId": "root",
       "metadata": {
-        "description": "Static HTML/JS/CSS viewer that loads mindmap-output.json and renders an interactive, explorable architecture graph.",
+        "description": "Self-contained interactive mind map viewer built with vanilla JavaScript, HTML, and CSS. Renders the mindmap-output.json as a hierarchical tree with SVG edges, supporting zoom/pan, detail cards, group panels, keyboard navigation, search/filter, and smooth animations. Operates independently of the MCP server — it simply loads the output JSON file.",
         "fileCount": 3,
         "highlightFileCount": 1
       },
@@ -608,7 +609,7 @@
       "label": "app.js",
       "kind": "file",
       "type": "frontend-app",
-      "parentId": "g-ef25e2e001cad444",
+      "parentId": "g-b77047cc13c89935",
       "metadata": {
         "canonicalPath": "frontend/app.js",
         "fileId": "50c2a84e8f4a513b",
@@ -616,52 +617,212 @@
         "role": "frontend-app",
         "importance": "core",
         "isHighlighted": true,
-        "description": "Interactive mind map viewer: loads mindmap-output.json and renders an explorable graph."
+        "description": "Main frontend application (1257 lines of vanilla JavaScript) that renders the mind map as an interactive tree visualization. Implements DOM-based node rendering, SVG edge drawing, zoom/pan controls, detail cards, group panels, keyboard navigation, search/filter, and animation. Loads mindmap-output.json and transforms the flat node/edge data into a hierarchical tree layout."
       },
-      "confidence": 0.92
+      "confidence": 1
     },
     {
       "id": "f-959f9cada636604d",
       "label": "index.html",
       "kind": "file",
-      "type": "frontend-html",
-      "parentId": "g-ef25e2e001cad444",
+      "type": "frontend-template",
+      "parentId": "g-b77047cc13c89935",
       "metadata": {
         "canonicalPath": "frontend/index.html",
         "fileId": "959f9cada636604d",
         "language": "html",
-        "role": "frontend-html",
+        "role": "frontend-template",
         "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.95
+      "confidence": 1
     },
     {
       "id": "f-679a43711b4b0365",
       "label": "styles.css",
       "kind": "file",
-      "type": "frontend-style",
-      "parentId": "g-ef25e2e001cad444",
+      "type": "frontend-styles",
+      "parentId": "g-b77047cc13c89935",
       "metadata": {
         "canonicalPath": "frontend/styles.css",
         "fileId": "679a43711b4b0365",
         "language": "css",
-        "role": "frontend-style",
-        "importance": "peripheral",
+        "role": "frontend-styles",
+        "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.95
+      "confidence": 1
     },
     {
-      "id": "g-1b5fc4e7bff65574",
-      "label": "Claude Code Plugin",
+      "id": "g-df07372d94f54d30",
+      "label": "Claude Code Plugin — Agents",
       "kind": "group",
-      "type": "feature",
+      "type": "domain",
       "parentId": "root",
       "metadata": {
-        "description": "Claude Code integration layer: agents, slash commands, and skills that orchestrate the MCP tools from within Claude Code.",
-        "fileCount": 10,
-        "highlightFileCount": 3
+        "description": "Claude Code agent definitions that orchestrate LLM-driven workflows using the mind map tools. The mindmap agent drives full generation, the architect agent enables architectural analysis, the impact agent assesses change ripple effects, and the onboard agent guides new developers. Each agent defines its tools, model preferences, and behavioral instructions in YAML+markdown format.",
+        "fileCount": 4,
+        "highlightFileCount": 1
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-5f7e96dc4238ab69",
+      "label": "mindmap-agent.md",
+      "kind": "file",
+      "type": "agent-definition",
+      "parentId": "g-df07372d94f54d30",
+      "metadata": {
+        "canonicalPath": "mindmap-plugin/agents/mindmap-agent.md",
+        "fileId": "5f7e96dc4238ab69",
+        "language": "markdown",
+        "role": "agent-definition",
+        "importance": "core",
+        "isHighlighted": true,
+        "description": "Mindmap agent definition — the primary agent that orchestrates the full mind map generation pipeline. Defines the phase machine (discover → extract → interpret → construct), hard rules for the LLM, and the ArchitecturePlan schema. This is the LLM's instruction manual for generating mind maps."
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-23e816bfc927a8ba",
+      "label": "architect-agent.md",
+      "kind": "file",
+      "type": "agent-definition",
+      "parentId": "g-df07372d94f54d30",
+      "metadata": {
+        "canonicalPath": "mindmap-plugin/agents/architect-agent.md",
+        "fileId": "23e816bfc927a8ba",
+        "language": "markdown",
+        "role": "agent-definition",
+        "importance": "supporting",
+        "isHighlighted": false
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-bcf874fa6278124b",
+      "label": "impact-agent.md",
+      "kind": "file",
+      "type": "agent-definition",
+      "parentId": "g-df07372d94f54d30",
+      "metadata": {
+        "canonicalPath": "mindmap-plugin/agents/impact-agent.md",
+        "fileId": "bcf874fa6278124b",
+        "language": "markdown",
+        "role": "agent-definition",
+        "importance": "supporting",
+        "isHighlighted": false
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-26e9ff90dd1a22e6",
+      "label": "onboard-agent.md",
+      "kind": "file",
+      "type": "agent-definition",
+      "parentId": "g-df07372d94f54d30",
+      "metadata": {
+        "canonicalPath": "mindmap-plugin/agents/onboard-agent.md",
+        "fileId": "26e9ff90dd1a22e6",
+        "language": "markdown",
+        "role": "agent-definition",
+        "importance": "supporting",
+        "isHighlighted": false
+      },
+      "confidence": 1
+    },
+    {
+      "id": "g-f506eb1f9e9e72f9",
+      "label": "Claude Code Plugin — Commands & Skills",
+      "kind": "group",
+      "type": "domain",
+      "parentId": "root",
+      "metadata": {
+        "description": "Claude Code slash commands and skill definitions that provide user-facing entry points and behavioral rules for the mind map system. Commands (generate, explain, impact) trigger specific workflows, while skills (architecture-aware, mindmap-rules) teach Claude Code to use mind map data in its reasoning and enforce quality conventions.",
+        "fileCount": 6,
+        "highlightFileCount": 2
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-4057e42cc1270e79",
+      "label": "generate.md",
+      "kind": "file",
+      "type": "command-definition",
+      "parentId": "g-f506eb1f9e9e72f9",
+      "metadata": {
+        "canonicalPath": "mindmap-plugin/commands/generate.md",
+        "fileId": "4057e42cc1270e79",
+        "language": "markdown",
+        "role": "command-definition",
+        "importance": "supporting",
+        "isHighlighted": true,
+        "description": "Generate command template — Claude Code slash command that triggers full mind map generation with customizable output path."
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-f75b707c46c8bcec",
+      "label": "explain.md",
+      "kind": "file",
+      "type": "command-definition",
+      "parentId": "g-f506eb1f9e9e72f9",
+      "metadata": {
+        "canonicalPath": "mindmap-plugin/commands/explain.md",
+        "fileId": "f75b707c46c8bcec",
+        "language": "markdown",
+        "role": "command-definition",
+        "importance": "supporting",
+        "isHighlighted": false
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-2e5c9ee9b1af6739",
+      "label": "impact.md",
+      "kind": "file",
+      "type": "command-definition",
+      "parentId": "g-f506eb1f9e9e72f9",
+      "metadata": {
+        "canonicalPath": "mindmap-plugin/commands/impact.md",
+        "fileId": "2e5c9ee9b1af6739",
+        "language": "markdown",
+        "role": "command-definition",
+        "importance": "supporting",
+        "isHighlighted": false
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-7e46a4532d11e097",
+      "label": "SKILL.md",
+      "kind": "file",
+      "type": "skill-definition",
+      "parentId": "g-f506eb1f9e9e72f9",
+      "metadata": {
+        "canonicalPath": "mindmap-plugin/skills/architecture-aware/SKILL.md",
+        "fileId": "7e46a4532d11e097",
+        "language": "markdown",
+        "role": "skill-definition",
+        "importance": "supporting",
+        "isHighlighted": false
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-95b7833099cbdebe",
+      "label": "SKILL.md",
+      "kind": "file",
+      "type": "skill-definition",
+      "parentId": "g-f506eb1f9e9e72f9",
+      "metadata": {
+        "canonicalPath": "mindmap-plugin/skills/mindmap-rules/SKILL.md",
+        "fileId": "95b7833099cbdebe",
+        "language": "markdown",
+        "role": "skill-definition",
+        "importance": "supporting",
+        "isHighlighted": true,
+        "description": "Mind map rules skill — defines conventions and constraints for mind map generation quality, including group naming, file classification, and edge semantics."
       },
       "confidence": 1
     },
@@ -669,173 +830,104 @@
       "id": "f-bdee0274b82a288f",
       "label": "README.md",
       "kind": "file",
-      "type": "doc",
-      "parentId": "g-1b5fc4e7bff65574",
+      "type": "documentation",
+      "parentId": "g-f506eb1f9e9e72f9",
       "metadata": {
         "canonicalPath": "mindmap-plugin/README.md",
         "fileId": "bdee0274b82a288f",
         "language": "markdown",
-        "role": "doc",
+        "role": "documentation",
+        "importance": "supporting",
+        "isHighlighted": false
+      },
+      "confidence": 1
+    },
+    {
+      "id": "g-8b0b5e5dda210928",
+      "label": "Build & Configuration",
+      "kind": "group",
+      "type": "infrastructure",
+      "parentId": "root",
+      "metadata": {
+        "description": "Build scripts and configuration files for the MCP server. Includes the npm package.json with dependencies and build commands, TypeScript compiler configuration, a shebang injection script for CLI binary creation, and a grammar copy script for bundling Tree-sitter WASM files into the distribution.",
+        "fileCount": 4,
+        "highlightFileCount": 1
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-f3494fd36ee5f868",
+      "label": "package.json",
+      "kind": "file",
+      "type": "config",
+      "parentId": "g-8b0b5e5dda210928",
+      "metadata": {
+        "canonicalPath": "mcp-server/package.json",
+        "fileId": "f3494fd36ee5f868",
+        "language": "json",
+        "role": "config",
+        "importance": "supporting",
+        "isHighlighted": true,
+        "description": "NPM package.json for the MCP server — defines dependencies (MCP SDK, Tree-sitter, Zod, fast-glob, uuid), build scripts, and the bin entry point for the mindmap-server CLI."
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-3c679b93a3052f8d",
+      "label": "tsconfig.json",
+      "kind": "file",
+      "type": "config",
+      "parentId": "g-8b0b5e5dda210928",
+      "metadata": {
+        "canonicalPath": "mcp-server/tsconfig.json",
+        "fileId": "3c679b93a3052f8d",
+        "language": "json",
+        "role": "config",
         "importance": "peripheral",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
-      "id": "f-23e816bfc927a8ba",
-      "label": "architect-agent.md",
+      "id": "f-ebfaa12268ff6ae5",
+      "label": "add-shebang.js",
       "kind": "file",
-      "type": "claude-agent",
-      "parentId": "g-1b5fc4e7bff65574",
+      "type": "build-script",
+      "parentId": "g-8b0b5e5dda210928",
       "metadata": {
-        "canonicalPath": "mindmap-plugin/agents/architect-agent.md",
-        "fileId": "23e816bfc927a8ba",
-        "language": "markdown",
-        "role": "claude-agent",
-        "importance": "core",
-        "isHighlighted": true,
-        "description": "Architect agent that drives high-level architectural reasoning over the mind map."
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "f-5f7e96dc4238ab69",
-      "label": "mindmap-agent.md",
-      "kind": "file",
-      "type": "claude-agent",
-      "parentId": "g-1b5fc4e7bff65574",
-      "metadata": {
-        "canonicalPath": "mindmap-plugin/agents/mindmap-agent.md",
-        "fileId": "5f7e96dc4238ab69",
-        "language": "markdown",
-        "role": "claude-agent",
-        "importance": "core",
-        "isHighlighted": true,
-        "description": "Primary mindmap agent orchestrating discover -> inspect -> generate pipeline."
-      },
-      "confidence": 0.93
-    },
-    {
-      "id": "f-bcf874fa6278124b",
-      "label": "impact-agent.md",
-      "kind": "file",
-      "type": "claude-agent",
-      "parentId": "g-1b5fc4e7bff65574",
-      "metadata": {
-        "canonicalPath": "mindmap-plugin/agents/impact-agent.md",
-        "fileId": "bcf874fa6278124b",
-        "language": "markdown",
-        "role": "claude-agent",
-        "importance": "supporting",
+        "canonicalPath": "mcp-server/scripts/add-shebang.js",
+        "fileId": "ebfaa12268ff6ae5",
+        "language": "javascript",
+        "role": "build-script",
+        "importance": "peripheral",
         "isHighlighted": false
       },
-      "confidence": 0.88
+      "confidence": 1
     },
     {
-      "id": "f-26e9ff90dd1a22e6",
-      "label": "onboard-agent.md",
+      "id": "f-7c82f899da6733ab",
+      "label": "copy-grammars.js",
       "kind": "file",
-      "type": "claude-agent",
-      "parentId": "g-1b5fc4e7bff65574",
+      "type": "build-script",
+      "parentId": "g-8b0b5e5dda210928",
       "metadata": {
-        "canonicalPath": "mindmap-plugin/agents/onboard-agent.md",
-        "fileId": "26e9ff90dd1a22e6",
-        "language": "markdown",
-        "role": "claude-agent",
-        "importance": "supporting",
+        "canonicalPath": "mcp-server/scripts/copy-grammars.js",
+        "fileId": "7c82f899da6733ab",
+        "language": "javascript",
+        "role": "build-script",
+        "importance": "peripheral",
         "isHighlighted": false
       },
-      "confidence": 0.88
+      "confidence": 1
     },
     {
-      "id": "f-4057e42cc1270e79",
-      "label": "generate.md",
-      "kind": "file",
-      "type": "claude-command",
-      "parentId": "g-1b5fc4e7bff65574",
-      "metadata": {
-        "canonicalPath": "mindmap-plugin/commands/generate.md",
-        "fileId": "4057e42cc1270e79",
-        "language": "markdown",
-        "role": "claude-command",
-        "importance": "supporting",
-        "isHighlighted": true,
-        "description": "/mindmap generate slash command."
-      },
-      "confidence": 0.9
-    },
-    {
-      "id": "f-f75b707c46c8bcec",
-      "label": "explain.md",
-      "kind": "file",
-      "type": "claude-command",
-      "parentId": "g-1b5fc4e7bff65574",
-      "metadata": {
-        "canonicalPath": "mindmap-plugin/commands/explain.md",
-        "fileId": "f75b707c46c8bcec",
-        "language": "markdown",
-        "role": "claude-command",
-        "importance": "supporting",
-        "isHighlighted": false
-      },
-      "confidence": 0.88
-    },
-    {
-      "id": "f-2e5c9ee9b1af6739",
-      "label": "impact.md",
-      "kind": "file",
-      "type": "claude-command",
-      "parentId": "g-1b5fc4e7bff65574",
-      "metadata": {
-        "canonicalPath": "mindmap-plugin/commands/impact.md",
-        "fileId": "2e5c9ee9b1af6739",
-        "language": "markdown",
-        "role": "claude-command",
-        "importance": "supporting",
-        "isHighlighted": false
-      },
-      "confidence": 0.88
-    },
-    {
-      "id": "f-7e46a4532d11e097",
-      "label": "SKILL.md",
-      "kind": "file",
-      "type": "claude-skill",
-      "parentId": "g-1b5fc4e7bff65574",
-      "metadata": {
-        "canonicalPath": "mindmap-plugin/skills/architecture-aware/SKILL.md",
-        "fileId": "7e46a4532d11e097",
-        "language": "markdown",
-        "role": "claude-skill",
-        "importance": "supporting",
-        "isHighlighted": false
-      },
-      "confidence": 0.88
-    },
-    {
-      "id": "f-95b7833099cbdebe",
-      "label": "SKILL.md",
-      "kind": "file",
-      "type": "claude-skill",
-      "parentId": "g-1b5fc4e7bff65574",
-      "metadata": {
-        "canonicalPath": "mindmap-plugin/skills/mindmap-rules/SKILL.md",
-        "fileId": "95b7833099cbdebe",
-        "language": "markdown",
-        "role": "claude-skill",
-        "importance": "supporting",
-        "isHighlighted": false
-      },
-      "confidence": 0.88
-    },
-    {
-      "id": "g-c205924de0fe636c",
-      "label": "Documentation",
+      "id": "g-1cdc00d95353fc17",
+      "label": "Project Documentation",
       "kind": "group",
       "type": "other",
       "parentId": "root",
       "metadata": {
-        "description": "Project documentation including architecture plan, research notes, and task lists.",
+        "description": "Design documents, research notes, and project tracking files that document the system's architecture, Claude Code extensibility research, development history, and remaining tasks. The PLAN_V2 document is the authoritative architectural reference for the entire project.",
         "fileCount": 7,
         "highlightFileCount": 2
       },
@@ -845,125 +937,125 @@
       "id": "f-b335630551682c19",
       "label": "README.md",
       "kind": "file",
-      "type": "doc",
-      "parentId": "g-c205924de0fe636c",
+      "type": "documentation",
+      "parentId": "g-1cdc00d95353fc17",
       "metadata": {
         "canonicalPath": "README.md",
         "fileId": "b335630551682c19",
         "language": "markdown",
-        "role": "doc",
-        "importance": "supporting",
+        "role": "documentation",
+        "importance": "core",
         "isHighlighted": true,
-        "description": "Root project README."
+        "description": "Root README providing project overview, architecture diagram, tool descriptions, and usage instructions for the entire mind map generator monorepo."
       },
-      "confidence": 0.95
+      "confidence": 1
     },
     {
       "id": "f-a2c8dd3821a56016",
       "label": "PLAN_V2.md",
       "kind": "file",
-      "type": "doc",
-      "parentId": "g-c205924de0fe636c",
+      "type": "documentation",
+      "parentId": "g-1cdc00d95353fc17",
       "metadata": {
         "canonicalPath": "docs/PLAN_V2.md",
         "fileId": "a2c8dd3821a56016",
         "language": "markdown",
-        "role": "doc",
-        "importance": "supporting",
+        "role": "documentation",
+        "importance": "core",
         "isHighlighted": true,
-        "description": "Architecture plan v2 document."
+        "description": "Comprehensive architecture plan (V2) documenting the full system design including the 8-tool MCP pipeline, artifact store pattern, Tree-sitter integration, and LLM orchestration strategy. This is the system's design bible."
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
       "id": "f-247bb5ffe03cf2a3",
       "label": "PROJECT.md",
       "kind": "file",
-      "type": "doc",
-      "parentId": "g-c205924de0fe636c",
+      "type": "documentation",
+      "parentId": "g-1cdc00d95353fc17",
       "metadata": {
         "canonicalPath": "docs/PROJECT.md",
         "fileId": "247bb5ffe03cf2a3",
         "language": "markdown",
-        "role": "doc",
-        "importance": "peripheral",
+        "role": "documentation",
+        "importance": "supporting",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 1
     },
     {
       "id": "f-d97698d7d2bc8f6e",
       "label": "RESEARCH.md",
       "kind": "file",
-      "type": "doc",
-      "parentId": "g-c205924de0fe636c",
+      "type": "documentation",
+      "parentId": "g-1cdc00d95353fc17",
       "metadata": {
         "canonicalPath": "docs/RESEARCH.md",
         "fileId": "d97698d7d2bc8f6e",
         "language": "markdown",
-        "role": "doc",
+        "role": "documentation",
+        "importance": "supporting",
+        "isHighlighted": false
+      },
+      "confidence": 1
+    },
+    {
+      "id": "f-db29608a13363030",
+      "label": "SIMULATION_OLD.md",
+      "kind": "file",
+      "type": "documentation",
+      "parentId": "g-1cdc00d95353fc17",
+      "metadata": {
+        "canonicalPath": "docs/SIMULATION_OLD.md",
+        "fileId": "db29608a13363030",
+        "language": "markdown",
+        "role": "documentation",
         "importance": "peripheral",
         "isHighlighted": false
       },
       "confidence": 0.9
     },
     {
-      "id": "f-db29608a13363030",
-      "label": "SIMULATION_OLD.md",
-      "kind": "file",
-      "type": "doc",
-      "parentId": "g-c205924de0fe636c",
-      "metadata": {
-        "canonicalPath": "docs/SIMULATION_OLD.md",
-        "fileId": "db29608a13363030",
-        "language": "markdown",
-        "role": "doc",
-        "importance": "peripheral",
-        "isHighlighted": false
-      },
-      "confidence": 0.85
-    },
-    {
       "id": "f-0b1c6a4e65a13286",
       "label": "yapilacaklar.md",
       "kind": "file",
-      "type": "doc",
-      "parentId": "g-c205924de0fe636c",
+      "type": "documentation",
+      "parentId": "g-1cdc00d95353fc17",
       "metadata": {
         "canonicalPath": "docs/yapilacaklar.md",
         "fileId": "0b1c6a4e65a13286",
         "language": "markdown",
-        "role": "doc",
+        "role": "documentation",
         "importance": "peripheral",
         "isHighlighted": false
       },
-      "confidence": 0.85
+      "confidence": 0.9
     },
     {
       "id": "f-5e2bb6d0989dba4b",
       "label": "todos.md",
       "kind": "file",
-      "type": "doc",
-      "parentId": "g-c205924de0fe636c",
+      "type": "documentation",
+      "parentId": "g-1cdc00d95353fc17",
       "metadata": {
         "canonicalPath": "todos.md",
         "fileId": "5e2bb6d0989dba4b",
         "language": "markdown",
-        "role": "doc",
+        "role": "documentation",
         "importance": "peripheral",
         "isHighlighted": false
       },
-      "confidence": 0.85
+      "confidence": 0.9
     },
     {
-      "id": "g-3950d7b2ae69b20c",
-      "label": "Generated Artifacts",
+      "id": "g-2bbf6cd25830698d",
+      "label": "Generated Output Artifacts",
       "kind": "group",
       "type": "other",
       "parentId": "root",
       "metadata": {
-        "description": "Mindmap output JSON snapshots consumed by the frontend and the overview tool.",
-        "fileCount": 3,
+        "description": "Previously generated mind map JSON output files — the primary artifact produced by the generation pipeline and consumed by the frontend visualization. Multiple backup copies exist alongside the active output file.",
+        "fileCount": 4,
         "highlightFileCount": 1
       },
       "confidence": 1
@@ -972,160 +1064,237 @@
       "id": "f-ec8915baaf5e9c2e",
       "label": "mindmap-output.json",
       "kind": "file",
-      "type": "artifact",
-      "parentId": "g-3950d7b2ae69b20c",
+      "type": "output-artifact",
+      "parentId": "g-2bbf6cd25830698d",
       "metadata": {
         "canonicalPath": "mindmap-output.json",
         "fileId": "ec8915baaf5e9c2e",
         "language": "json",
-        "role": "artifact",
-        "importance": "supporting",
+        "role": "output-artifact",
+        "importance": "peripheral",
         "isHighlighted": true,
-        "description": "Current generated mindmap output consumed by the frontend and overview tool."
+        "description": "Current mind map output JSON — the active visualization data file consumed by the frontend."
       },
-      "confidence": 0.95
+      "confidence": 0.9
+    },
+    {
+      "id": "f-9abdc995c13e523c",
+      "label": "mindmap-output copy 1.json",
+      "kind": "file",
+      "type": "output-artifact",
+      "parentId": "g-2bbf6cd25830698d",
+      "metadata": {
+        "canonicalPath": "mindmap-output copy 1.json",
+        "fileId": "9abdc995c13e523c",
+        "language": "json",
+        "role": "output-artifact",
+        "importance": "peripheral",
+        "isHighlighted": false
+      },
+      "confidence": 0.8
     },
     {
       "id": "f-18516a008b1e6b84",
       "label": "mindmap-output copy 2.json",
       "kind": "file",
-      "type": "artifact",
-      "parentId": "g-3950d7b2ae69b20c",
+      "type": "output-artifact",
+      "parentId": "g-2bbf6cd25830698d",
       "metadata": {
         "canonicalPath": "mindmap-output copy 2.json",
         "fileId": "18516a008b1e6b84",
         "language": "json",
-        "role": "artifact",
+        "role": "output-artifact",
         "importance": "peripheral",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 0.8
     },
     {
-      "id": "f-f904c5a5af80ab2d",
-      "label": "mindmap-output copy.json",
+      "id": "f-1128faac511426ad",
+      "label": "mindmap-output copy 3.json",
       "kind": "file",
-      "type": "artifact",
-      "parentId": "g-3950d7b2ae69b20c",
+      "type": "output-artifact",
+      "parentId": "g-2bbf6cd25830698d",
       "metadata": {
-        "canonicalPath": "mindmap-output copy.json",
-        "fileId": "f904c5a5af80ab2d",
+        "canonicalPath": "mindmap-output copy 3.json",
+        "fileId": "1128faac511426ad",
         "language": "json",
-        "role": "artifact",
+        "role": "output-artifact",
         "importance": "peripheral",
         "isHighlighted": false
       },
-      "confidence": 0.9
+      "confidence": 0.8
     }
   ],
   "edges": [
+    {
+      "id": "e-dac7315ea8aa3e44",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-7877a9d693b32198",
+      "rels": [
+        "instantiates",
+        "dependency-injection"
+      ],
+      "label": "Entry point creates the singleton ArtifactStore and injects it into all tool handlers",
+      "metadata": {
+        "annotation": "Entry point creates the singleton ArtifactStore and injects it into all tool handlers"
+      }
+    },
     {
       "id": "e-09dce12243f22ac9",
       "source": "f-e8f7ed71d93ad489",
       "target": "f-d3633fc4fa0e2e79",
       "rels": [
-        "registers"
+        "registers-tool"
       ],
-      "metadata": {}
+      "label": "Registers mindmap.discover tool handler",
+      "metadata": {
+        "annotation": "Registers mindmap.discover tool handler"
+      }
     },
     {
       "id": "e-ebb41d12ae19742a",
       "source": "f-e8f7ed71d93ad489",
       "target": "f-214b08ce78fc29af",
       "rels": [
-        "registers"
+        "registers-tool"
       ],
-      "metadata": {}
+      "label": "Registers mindmap.inspect tool handler",
+      "metadata": {
+        "annotation": "Registers mindmap.inspect tool handler"
+      }
     },
     {
       "id": "e-b58a1c9115ad1a52",
       "source": "f-e8f7ed71d93ad489",
       "target": "f-6de020c80ab11b7d",
       "rels": [
-        "registers"
+        "registers-tool"
       ],
-      "metadata": {}
+      "label": "Registers mindmap.generate tool handler",
+      "metadata": {
+        "annotation": "Registers mindmap.generate tool handler"
+      }
     },
     {
       "id": "e-cb39f13510f0bcd2",
       "source": "f-e8f7ed71d93ad489",
       "target": "f-1242855a58408f3e",
       "rels": [
-        "registers"
+        "registers-tool"
       ],
-      "metadata": {}
+      "label": "Registers mindmap.overview tool handler",
+      "metadata": {
+        "annotation": "Registers mindmap.overview tool handler"
+      }
+    },
+    {
+      "id": "e-1a8da8a919e297ab",
+      "source": "f-e8f7ed71d93ad489",
+      "target": "f-52bf8d13b5700c39",
+      "rels": [
+        "registers-tool"
+      ],
+      "label": "Registers mindmap.find tool handler",
+      "metadata": {
+        "annotation": "Registers mindmap.find tool handler"
+      }
     },
     {
       "id": "e-bc12185608ed8149",
       "source": "f-d3633fc4fa0e2e79",
       "target": "f-d69795c6d50526f3",
       "rels": [
-        "uses"
+        "orchestrates"
       ],
-      "metadata": {}
+      "label": "Discover calls scan for file listing",
+      "metadata": {
+        "annotation": "Discover calls scan for file listing"
+      }
     },
     {
       "id": "e-1e12de387291f811",
       "source": "f-d3633fc4fa0e2e79",
       "target": "f-319363d430e9d9bc",
       "rels": [
-        "uses"
+        "orchestrates"
       ],
-      "metadata": {}
+      "label": "Discover calls resolve for path/ID resolution",
+      "metadata": {
+        "annotation": "Discover calls resolve for path/ID resolution"
+      }
     },
     {
       "id": "e-54cd469bf86ad754",
       "source": "f-d3633fc4fa0e2e79",
       "target": "f-f23002dfc341cd9c",
       "rels": [
-        "uses"
+        "orchestrates"
       ],
-      "metadata": {}
+      "label": "Discover calls context for project metadata extraction",
+      "metadata": {
+        "annotation": "Discover calls context for project metadata extraction"
+      }
     },
     {
       "id": "e-d36fb9751ff54b77",
       "source": "f-214b08ce78fc29af",
       "target": "f-049ee2f92b096d77",
       "rels": [
-        "uses"
+        "delegates"
       ],
-      "metadata": {}
+      "label": "Inspect delegates parse mode to the parse engine",
+      "metadata": {
+        "annotation": "Inspect delegates parse mode to the parse engine"
+      }
     },
     {
       "id": "e-f92e0d8517fe785b",
       "source": "f-214b08ce78fc29af",
       "target": "f-b49504342ab0a9f7",
       "rels": [
-        "uses"
+        "delegates"
       ],
-      "metadata": {}
+      "label": "Inspect delegates sample mode to the sampler",
+      "metadata": {
+        "annotation": "Inspect delegates sample mode to the sampler"
+      }
     },
     {
       "id": "e-b41b76bfca7b43b2",
       "source": "f-6de020c80ab11b7d",
       "target": "f-d638059166d4e8e2",
       "rels": [
-        "uses"
+        "orchestrates"
       ],
-      "metadata": {}
+      "label": "Generate orchestrates build step",
+      "metadata": {
+        "annotation": "Generate orchestrates build step"
+      }
     },
     {
       "id": "e-a3f5de7922c6770e",
       "source": "f-6de020c80ab11b7d",
       "target": "f-37a1e3ff7092236b",
       "rels": [
-        "uses"
+        "orchestrates"
       ],
-      "metadata": {}
+      "label": "Generate orchestrates validate step",
+      "metadata": {
+        "annotation": "Generate orchestrates validate step"
+      }
     },
     {
       "id": "e-80646735eabf48d3",
       "source": "f-6de020c80ab11b7d",
       "target": "f-0f11ab0fd4984fda",
       "rels": [
-        "uses"
+        "orchestrates"
       ],
-      "metadata": {}
+      "label": "Generate orchestrates publish step",
+      "metadata": {
+        "annotation": "Generate orchestrates publish step"
+      }
     },
     {
       "id": "e-703f48a843f1601e",
@@ -1134,7 +1303,10 @@
       "rels": [
         "uses"
       ],
-      "metadata": {}
+      "label": "Parse engine looks up normalizers from the registry",
+      "metadata": {
+        "annotation": "Parse engine looks up normalizers from the registry"
+      }
     },
     {
       "id": "e-d10a75c191271735",
@@ -1143,79 +1315,82 @@
       "rels": [
         "uses"
       ],
-      "metadata": {}
+      "label": "Parse engine uses Tree-sitter loader for parser initialization",
+      "metadata": {
+        "annotation": "Parse engine uses Tree-sitter loader for parser initialization"
+      }
     },
     {
       "id": "e-c01c5015b168511d",
       "source": "f-71804e438b80b7b3",
       "target": "f-53e403f99bb9ad8b",
       "rels": [
-        "dispatches"
+        "registers"
       ],
-      "metadata": {}
+      "label": "Registry registers TypeScript normalizer",
+      "metadata": {
+        "annotation": "Registry registers TypeScript normalizer"
+      }
     },
     {
       "id": "e-76742843f9524e9a",
       "source": "f-71804e438b80b7b3",
       "target": "f-23744172e5f5fa22",
       "rels": [
-        "dispatches"
+        "registers"
       ],
-      "metadata": {}
+      "label": "Registry registers Python normalizer",
+      "metadata": {
+        "annotation": "Registry registers Python normalizer"
+      }
     },
     {
       "id": "e-ab26259581662c5c",
       "source": "f-71804e438b80b7b3",
       "target": "f-5bb2bd36f52477e1",
       "rels": [
-        "dispatches"
+        "registers"
       ],
-      "metadata": {}
+      "label": "Registry registers Go normalizer",
+      "metadata": {
+        "annotation": "Registry registers Go normalizer"
+      }
     },
     {
       "id": "e-91bd6c8330233822",
       "source": "f-71804e438b80b7b3",
       "target": "f-6521643ae5a54621",
       "rels": [
-        "dispatches"
+        "registers"
       ],
-      "metadata": {}
+      "label": "Registry registers Rust normalizer",
+      "metadata": {
+        "annotation": "Registry registers Rust normalizer"
+      }
     },
     {
       "id": "e-0f7d96da2169e8d4",
       "source": "f-71804e438b80b7b3",
       "target": "f-31630c0b361a7975",
       "rels": [
-        "dispatches"
+        "registers"
       ],
-      "metadata": {}
+      "label": "Registry registers Java normalizer",
+      "metadata": {
+        "annotation": "Registry registers Java normalizer"
+      }
     },
     {
-      "id": "e-8ea81712f18d9e4a",
-      "source": "f-d3633fc4fa0e2e79",
-      "target": "f-7877a9d693b32198",
+      "id": "e-31f2cec608234a43",
+      "source": "f-52bf8d13b5700c39",
+      "target": "f-1242855a58408f3e",
       "rels": [
-        "stores-in"
+        "imports-from"
       ],
-      "metadata": {}
-    },
-    {
-      "id": "e-24e9c5f300bccba7",
-      "source": "f-214b08ce78fc29af",
-      "target": "f-7877a9d693b32198",
-      "rels": [
-        "stores-in"
-      ],
-      "metadata": {}
-    },
-    {
-      "id": "e-bc5a630a5300f32b",
-      "source": "f-6de020c80ab11b7d",
-      "target": "f-7877a9d693b32198",
-      "rels": [
-        "reads-from"
-      ],
-      "metadata": {}
+      "label": "Find tool imports MindMapJSON types and helper functions from overview",
+      "metadata": {
+        "annotation": "Find tool imports MindMapJSON types and helper functions from overview"
+      }
     },
     {
       "id": "e-9e51bff6fa50afd5",
@@ -1224,7 +1399,10 @@
       "rels": [
         "uses"
       ],
-      "metadata": {}
+      "label": "Overview uses GitHub fetch for remote repo support",
+      "metadata": {
+        "annotation": "Overview uses GitHub fetch for remote repo support"
+      }
     },
     {
       "id": "e-a74c6267e9241e94",
@@ -1233,52 +1411,70 @@
       "rels": [
         "uses"
       ],
-      "metadata": {}
-    },
-    {
-      "id": "e-487e50f5dbdf649b",
-      "source": "f-1242855a58408f3e",
-      "target": "f-ec8915baaf5e9c2e",
-      "rels": [
-        "reads"
-      ],
-      "metadata": {}
+      "label": "Overview uses mindmap cache for local caching",
+      "metadata": {
+        "annotation": "Overview uses mindmap cache for local caching"
+      }
     },
     {
       "id": "e-857ea7fa80675485",
       "source": "f-50c2a84e8f4a513b",
       "target": "f-ec8915baaf5e9c2e",
       "rels": [
-        "loads"
+        "reads-data"
       ],
-      "metadata": {}
+      "label": "Frontend loads mindmap-output.json for visualization",
+      "metadata": {
+        "annotation": "Frontend loads mindmap-output.json for visualization"
+      }
     },
     {
-      "id": "e-e252260099fd3cd3",
-      "source": "f-959f9cada636604d",
-      "target": "f-50c2a84e8f4a513b",
+      "id": "e-544978db1ba8bf83",
+      "source": "f-0f11ab0fd4984fda",
+      "target": "f-ec8915baaf5e9c2e",
       "rels": [
-        "hosts"
+        "writes-data"
       ],
-      "metadata": {}
+      "label": "Publisher writes the final mind map to mindmap-output.json",
+      "metadata": {
+        "annotation": "Publisher writes the final mind map to mindmap-output.json"
+      }
+    },
+    {
+      "id": "e-e801ce549a5cd854",
+      "source": "f-d638059166d4e8e2",
+      "target": "f-458b5c84e88c4ab9",
+      "rels": [
+        "uses"
+      ],
+      "label": "Build tool uses hashing for generating stable node and edge IDs",
+      "metadata": {
+        "annotation": "Build tool uses hashing for generating stable node and edge IDs"
+      }
+    },
+    {
+      "id": "e-0074322e080c0ae8",
+      "source": "f-319363d430e9d9bc",
+      "target": "f-458b5c84e88c4ab9",
+      "rels": [
+        "uses"
+      ],
+      "label": "Resolver uses hashing for generating stable file IDs",
+      "metadata": {
+        "annotation": "Resolver uses hashing for generating stable file IDs"
+      }
     },
     {
       "id": "e-d4d01d3f513bb1b8",
       "source": "f-5f7e96dc4238ab69",
       "target": "f-e8f7ed71d93ad489",
       "rels": [
-        "invokes"
+        "orchestrates-via-mcp"
       ],
-      "metadata": {}
-    },
-    {
-      "id": "e-724cf16c0a276f06",
-      "source": "f-4057e42cc1270e79",
-      "target": "f-5f7e96dc4238ab69",
-      "rels": [
-        "triggers"
-      ],
-      "metadata": {}
+      "label": "Mindmap agent drives the full pipeline by calling MCP tools exposed by index.ts",
+      "metadata": {
+        "annotation": "Mindmap agent drives the full pipeline by calling MCP tools exposed by index.ts"
+      }
     }
   ]
 }

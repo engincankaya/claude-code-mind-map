@@ -3,6 +3,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { z } from "zod";
 import { ArtifactStore } from "./lib/artifact-store.js";
 import { handleDiscover } from "./tools/discover.js";
+import { handleFind } from "./tools/find.js";
 import { handleGenerate } from "./tools/generate.js";
 import { handleInspect } from "./tools/inspect.js";
 import { handleOverview } from "./tools/overview.js";
@@ -143,9 +144,9 @@ server.registerTool(
   {
     title: "Mind Map Overview",
     description:
-      "Read a previously generated mind map JSON from disk and return " +
-      "an LLM-friendly project summary at 3 depth levels. " +
-      "Use this to understand a project's architecture without reading the full graph.",
+      "Read a previously generated mind map JSON and return a project-level " +
+      "architectural overview. Use this first to understand the big picture " +
+      "before searching for a specific feature, file, or subsystem.",
     inputSchema: {
       depth: z
         .enum(["minimal", "standard", "detailed"])
@@ -156,10 +157,6 @@ server.registerTool(
           "standard: + key files, descriptions, key relationships (~800 tokens). " +
           "detailed: + all files, all edges, confidence scores (~2000 tokens).",
         ),
-      focus: z
-        .string()
-        .optional()
-        .describe("Filter to a specific group by name (e.g. 'API Layer')"),
       selected_repo_id: z
         .string()
         .optional()
@@ -180,6 +177,49 @@ server.registerTool(
     },
   },
   async (args) => handleOverview(args),
+);
+
+server.registerTool(
+  "mindmap.find",
+  {
+    title: "Find In Mind Map",
+    description:
+      "Search an existing mind map for a specific architecture area, feature, file, " +
+      "role, or relationship. Use this after mindmap.overview when the user asks " +
+      "about something specific, such as 'RAG Pipeline', 'error handling', or 'API layer'. " +
+      "If there is no match, the tool returns the full overview with suggestions.",
+    inputSchema: {
+      query: z
+        .string()
+        .describe("Search query for a feature, subsystem, file path, role, or relationship."),
+      depth: z
+        .enum(["standard", "detailed"])
+        .optional()
+        .default("standard")
+        .describe(
+          "standard: matching groups, files, roles, and key relationships. " +
+          "detailed: + all related edges and file confidence scores.",
+        ),
+      selected_repo_id: z
+        .string()
+        .optional()
+        .describe(
+          "GitHub repository in 'owner/repo' format. When set, the tool fetches " +
+          "mindmap-output.json from the repo via the GitHub raw contents API and " +
+          "caches it locally. When omitted, the local mindmap-output.json is used.",
+        ),
+      ref: z
+        .string()
+        .optional()
+        .describe("Optional git ref (branch, tag, or commit SHA). Defaults to the repo's default branch."),
+      force_refresh: z
+        .boolean()
+        .optional()
+        .default(false)
+        .describe("If true, bypass the local cache and re-fetch from GitHub."),
+    },
+  },
+  async (args) => handleFind(args),
 );
 
 async function main(): Promise<void> {

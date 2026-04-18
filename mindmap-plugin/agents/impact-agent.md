@@ -4,6 +4,7 @@ description: Analyzes the ripple effect of code changes by tracing dependencies 
 tools:
   - mcp__mindmap__mindmap_inspect
   - mcp__mindmap__mindmap_overview
+  - mcp__mindmap__mindmap_find
   - Read
   - Glob
   - Grep

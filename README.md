@@ -1,3 +1,9 @@
+> [!IMPORTANT]
+> This repository is archived and no longer maintained.
+>
+> Please use the current Blueprint MCP server repository:
+> **https://github.com/engincankaya/blueprint**
+
 # Mind Map Generator
 
 Architecture-aware mind map generator for code repositories.
